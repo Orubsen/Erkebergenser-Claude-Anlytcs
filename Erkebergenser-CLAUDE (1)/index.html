@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="no" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erkebergenser — Røsten & Leffe · Republikken Bergen</title>
+    <meta name="description" content="Republikken Bergens sanntids-broadcast for regn, Hansa-lykke og SK Brann-hype. Drevet av låten «Erkebergenser» av Røsten & Leffe.">
+    <meta name="author" content="Røsten & Leffe">
+    <meta name="theme-color" content="#04060B">
+
+    <link rel="icon" type="image/jpeg" href="https://i.scdn.co/image/ab67616d000048517810ead6ae130dcb6455e890">
+    <link rel="apple-touch-icon" href="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890">
+
+    <meta property="og:site_name" content="Republikken Bergen Broadcast">
+    <meta property="og:title" content="Erkebergenser — Røsten & Leffe">
+    <meta property="og:description" content="Republikken Bergens sanntids-broadcast for regn, Hansa-lykke og SK Brann-hype. Hør «Erkebergenser» og lag ditt eget erkebergenske pass.">
+    <meta property="og:image" content="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890">
+    <meta property="og:image:width" content="640">
+    <meta property="og:image:height" content="640">
+    <meta property="og:image:alt" content="Røsten & Leffe – Erkebergenser albumcover">
+    <meta property="og:type" content="music.song">
+    <meta property="og:url" content="https://erkebergenser.netlify.app/">
+    <meta property="og:locale" content="nb_NO">
+    <meta property="music:musician" content="Røsten & Leffe">
+    <meta property="og:video" content="https://www.youtube.com/watch?v=EcWQlSrhZgA">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Erkebergenser — Røsten & Leffe">
+    <meta name="twitter:description" content="Sanntids-broadcast for bergensk regn, Hansa-lykke og SK Brann-hype.">
+    <meta name="twitter:image" content="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Anton', 'sans-serif'],
+                    },
+                    colors: {
+                        bergenRed: '#E31B23',
+                        hansaGold: '#C9A455',
+                        deepOcean: '#04060B',
+                        rainBlue: '#6DA9D0',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --ink-0: #04060B;
+            --ink-1: #080B12;
+            --ink-2: #0E131C;
+            --ink-3: #141A25;
+            --line: rgba(255,255,255,0.055);
+            --line-strong: rgba(255,255,255,0.10);
+            --text-1: #ECEFF4;
+            --text-2: #8B95A7;
+            --text-3: #5A6478;
+            --red: #E31B23;
+            --red-soft: rgba(227,27,35,0.14);
+            --gold: #C9A455;
+            --gold-soft: rgba(201,164,85,0.10);
+            --rain: #6DA9D0;
+            --rain-soft: rgba(109,169,208,0.10);
+            --green: #1DB954;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --ease-fast: cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        * { -webkit-font-smoothing: antialiased; }
+
+        html, body { background: var(--ink-0); }
+        body {
+            color: var(--text-1);
+            overflow-x: hidden;
+            font-feature-settings: "ss01", "cv11";
+        }
+
+        /* Atmosphere — two-tone subtle gradient, no glow, no halo */
+        .atmosphere {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background:
+                radial-gradient(1400px 700px at 50% -10%, rgba(227,27,35,0.07), transparent 65%),
+                radial-gradient(1000px 600px at 90% 100%, rgba(201,164,85,0.04), transparent 65%);
+        }
+        .grain {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.025;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        }
+
+        /* Surface system — one card language */
+        .surface {
+            background: var(--ink-2);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+        }
+        .surface-inset {
+            background: var(--ink-1);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+        }
+        .surface-deep {
+            background: rgba(0,0,0,0.35);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+        }
+
+        /* Typography rhythm */
+        .eyebrow {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--text-2);
+            font-weight: 500;
+        }
+        .eyebrow-red { color: var(--red); }
+        .eyebrow-gold { color: var(--gold); }
+        .eyebrow-rain { color: var(--rain); }
+        .display { font-family: 'Anton', sans-serif; letter-spacing: 0.005em; }
+        .lede { color: var(--text-2); font-size: 14px; line-height: 1.55; max-width: 60ch; }
+        .micro { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-3); letter-spacing: 0.06em; }
+        .mono-num { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+
+        /* Section anatomy */
+        .section { margin-top: 56px; }
+        .section + .section { margin-top: 64px; }
+        .section-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+        .section-head .left { min-width: 0; }
+        .section-head h2 { font-family: 'Anton', sans-serif; font-size: clamp(22px, 3.2vw, 32px); line-height: 1; color: var(--text-1); letter-spacing: 0.01em; margin-top: 8px; }
+        .section-head .right { color: var(--text-3); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap; padding-top: 2px; }
+        @media (max-width: 600px) {
+            .section-head { flex-direction: column; gap: 6px; align-items: flex-start; }
+            .section-head .right { padding-top: 0; }
+        }
+
+        /* Rain */
+        .rain-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .drop {
+            position: absolute;
+            background: linear-gradient(transparent, rgba(109,169,208,0.35));
+            width: 1px;
+            height: 70px;
+            opacity: 0.45;
+            animation: fall linear infinite;
+        }
+        @keyframes fall { 0% { transform: translateY(-120px); } 100% { transform: translateY(110vh); } }
+
+        /* Vinyl */
+        .spin-vinyl { animation: spin 8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Live dot */
+        .live-dot {
+            display: inline-block; width: 6px; height: 6px; border-radius: 999px;
+            background: var(--red); box-shadow: 0 0 0 0 rgba(227,27,35,0.55);
+            animation: pulse 2.2s ease-out infinite;
+            vertical-align: middle;
+            position: relative; top: -1px;
+        }
+        .live-dot.green { background: var(--green); box-shadow: 0 0 0 0 rgba(29,185,84,0.55); animation-name: pulse-green; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(227,27,35,0.55); }
+            70% { box-shadow: 0 0 0 8px rgba(227,27,35,0); }
+            100% { box-shadow: 0 0 0 0 rgba(227,27,35,0); }
+        }
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(29,185,84,0.55); }
+            70% { box-shadow: 0 0 0 8px rgba(29,185,84,0); }
+            100% { box-shadow: 0 0 0 0 rgba(29,185,84,0); }
+        }
+
+        /* Rise-in (single, subtle) */
+        @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        .rise { opacity: 0; animation: rise 0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+        /* Broadcast strip */
+        .broadcast {
+            background: var(--ink-1);
+            border-bottom: 1px solid var(--line);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10.5px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--text-2);
+        }
+        .broadcast .sep { color: var(--text-3); padding: 0 18px; }
+        .marquee-track { display: inline-block; white-space: nowrap; animation: marquee 60s linear infinite; padding-right: 32px; }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; gap: 10px; padding: 13px 22px; border-radius: 999px; font-weight: 700; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; transition: transform .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease), color .25s var(--ease); will-change: transform; }
+        .btn:active { transform: translateY(1px); }
+        .btn-primary { background: var(--green); color: #051208; }
+        .btn-primary:hover { background: #25d166; }
+        .btn-red { background: var(--red); color: #fff; }
+        .btn-red:hover { background: #ef2730; }
+        .btn-ghost { background: transparent; color: var(--text-1); border: 1px solid var(--line-strong); }
+        .btn-ghost:hover { border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.025); }
+        .btn-gold { background: var(--gold); color: #1a1208; }
+        .btn-gold:hover { background: #d6b568; }
+        .btn-sm { padding: 9px 14px; font-size: 11px; letter-spacing: 0.1em; }
+
+        /* Inline text link — used in hero meta as tertiary CTA */
+        .link-mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10.5px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--text-2);
+            text-decoration: none;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 2px;
+            border-bottom: 1px solid transparent;
+            transition: color .25s var(--ease), border-color .25s var(--ease), gap .25s var(--ease);
+        }
+        .link-mono:hover { color: var(--text-1); border-bottom-color: var(--line-strong); gap: 10px; }
+        .link-mono .arr { color: var(--gold); transition: transform .3s var(--ease); }
+        .link-mono:hover .arr { transform: translateY(2px); }
+
+        /* Tabs */
+        .tab { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; padding: 9px 14px; border-radius: 8px; color: var(--text-2); background: transparent; border: 1px solid var(--line); transition: color .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease); }
+        .tab:hover { color: var(--text-1); border-color: var(--line-strong); }
+        .tab.is-active { background: var(--ink-3); color: var(--text-1); border-color: var(--line-strong); }
+
+        /* Stats divider grid */
+        .metric-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            background: var(--ink-2);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .metric-cell { padding: 24px 22px 22px; position: relative; }
+        .metric-cell + .metric-cell { border-left: 1px solid var(--line); }
+        @media (max-width: 900px) {
+            .metric-grid { grid-template-columns: repeat(2, 1fr); }
+            .metric-cell:nth-child(2) { border-left: 1px solid var(--line); }
+            .metric-cell:nth-child(3) { border-left: none; border-top: 1px solid var(--line); }
+            .metric-cell:nth-child(4) { border-top: 1px solid var(--line); }
+        }
+        @media (max-width: 520px) {
+            .metric-grid { grid-template-columns: 1fr; }
+            .metric-cell { padding: 18px 18px; }
+            .metric-cell + .metric-cell { border-left: none; border-top: 1px solid var(--line); }
+        }
+        .metric-value { font-family: 'Anton', sans-serif; font-size: 40px; line-height: 1; color: var(--text-1); letter-spacing: 0.01em; }
+        .metric-delta { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; margin-top: 8px; }
+        /* Liten ærlighets-fotnote under hver metrikk: hvor kommer tallet fra? */
+        .metric-source {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-3);
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--line);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .metric-source .src-dot {
+            width: 6px; height: 6px; border-radius: 999px; background: var(--text-3);
+            flex: 0 0 6px;
+        }
+        .metric-source.is-live .src-dot { background: var(--green); box-shadow: 0 0 0 3px rgba(29,185,84,0.18); animation: pulse 1.8s ease-in-out infinite; }
+        .metric-source.is-error .src-dot { background: var(--red); }
+        .metric-source.is-manual .src-dot { background: var(--gold); }
+
+        /* Form inputs */
+        .field-label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-2); margin-bottom: 6px; }
+        .field {
+            width: 100%; background: var(--ink-1); border: 1px solid var(--line);
+            border-radius: 10px; padding: 10px 12px; font-size: 13px;
+            color: var(--text-1); transition: border-color .25s var(--ease), background .25s var(--ease);
+        }
+        .field:hover { border-color: rgba(255,255,255,0.12); }
+        .field:focus { outline: none; border-color: var(--gold); background: var(--ink-2); }
+        select.field { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%), linear-gradient(135deg, var(--text-2) 50%, transparent 50%); background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 30px; }
+
+        /* Range slider */
+        input[type="range"].rain-range {
+            -webkit-appearance: none; appearance: none;
+            background: transparent; height: 28px;
+        }
+        input[type="range"].rain-range::-webkit-slider-runnable-track {
+            height: 4px; background: var(--ink-3); border-radius: 999px; border: 1px solid var(--line);
+        }
+        input[type="range"].rain-range::-moz-range-track { height: 4px; background: var(--ink-3); border-radius: 999px; border: 1px solid var(--line); }
+        input[type="range"].rain-range::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 16px; height: 16px; background: var(--rain); border-radius: 999px; cursor: pointer;
+            margin-top: -7px; border: 2px solid var(--ink-0); transition: transform .25s var(--ease), background .25s var(--ease);
+        }
+        input[type="range"].rain-range::-webkit-slider-thumb:hover { transform: scale(1.2); background: #8FC0E0; }
+        input[type="range"].rain-range::-moz-range-thumb { width: 16px; height: 16px; background: var(--rain); border-radius: 999px; cursor: pointer; border: 2px solid var(--ink-0); }
+
+        /* Pass card — burgundy passport feel */
+        .pass {
+            position: relative;
+            background: #1d0509;
+            border: 1px solid rgba(201,164,85,0.28);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(201,164,85,0.05);
+        }
+        .pass-cover {
+            position: relative;
+            height: 230px;
+            overflow: hidden;
+            background: #2a0610;
+        }
+        .pass-cover img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center 18%;
+        }
+        .pass-cover::after {
+            content: ""; position: absolute; inset: 0;
+            background:
+                linear-gradient(180deg, rgba(15,3,6,0) 55%, rgba(15,3,6,0.55) 80%, rgba(15,3,6,0.95) 100%),
+                linear-gradient(90deg, rgba(15,3,6,0.15) 0%, rgba(15,3,6,0) 30%, rgba(15,3,6,0) 70%, rgba(15,3,6,0.15) 100%);
+            pointer-events: none;
+        }
+        .pass-grain { position: absolute; inset: 0; pointer-events: none; opacity: 0.18; mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+        }
+        .pass-rule {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(201,164,85,0.55) 20%, rgba(201,164,85,0.85) 50%, rgba(201,164,85,0.55) 80%, transparent);
+        }
+        .pass-body {
+            position: relative;
+            padding: 20px;
+            background:
+                linear-gradient(180deg, rgba(40,8,14,0.85), rgba(20,4,8,0.92)),
+                radial-gradient(800px 200px at 30% 0%, rgba(201,164,85,0.10), transparent 60%);
+        }
+        .pass-corner { position: absolute; width: 12px; height: 12px; border-color: rgba(201,164,85,0.6); z-index: 2; }
+        .pass-corner.tl { top: 10px; left: 10px; border-top: 1px solid; border-left: 1px solid; }
+        .pass-corner.tr { top: 10px; right: 10px; border-top: 1px solid; border-right: 1px solid; }
+        .pass-corner.bl { bottom: 10px; left: 10px; border-bottom: 1px solid; border-left: 1px solid; }
+        .pass-corner.br { bottom: 10px; right: 10px; border-bottom: 1px solid; border-right: 1px solid; }
+
+        /* Gauge */
+        .gauge-track { stroke: var(--ink-3); }
+        .gauge-fill { stroke: var(--red); transition: stroke-dashoffset .8s cubic-bezier(.22,1,.36,1); }
+
+        /* Dict button */
+        .dict-btn {
+            font-family: 'JetBrains Mono', monospace;
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--text-2);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            text-align: left;
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            transition: color .25s var(--ease), background .25s var(--ease), border-color .25s var(--ease);
+        }
+        .dict-btn:hover { background: var(--ink-3); color: var(--text-1); border-color: var(--line-strong); }
+        .dict-btn.is-active { background: rgba(227,27,35,0.10); color: var(--red); border-color: rgba(227,27,35,0.45); }
+        .dict-btn.is-active i { color: var(--red); opacity: 1; }
+
+        /* Brand chip */
+        .chip {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 5px 11px; border-radius: 999px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+            border: 1px solid var(--line);
+            background: var(--ink-2);
+            color: var(--text-2);
+        }
+        .chip-red { color: var(--red); border-color: rgba(227,27,35,0.3); background: var(--red-soft); }
+        .chip-gold { color: var(--gold); border-color: rgba(201,164,85,0.3); background: var(--gold-soft); }
+        .chip-rain { color: var(--rain); border-color: rgba(109,169,208,0.3); background: var(--rain-soft); }
+        .chip-green { color: var(--green); border-color: rgba(29,185,84,0.3); background: rgba(29,185,84,0.08); }
+        .chip-warn { color: #E5B33A; border-color: rgba(229,179,58,0.3); background: rgba(229,179,58,0.08); }
+
+        /* HERO */
+        .hero { position: relative; border-radius: 24px; overflow: hidden; isolation: isolate; }
+        .hero-bg { position: absolute; inset: 0; }
+        .hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
+        .hero-veil {
+            position: absolute; inset: 0;
+            background:
+                linear-gradient(180deg, rgba(4,6,11,0) 0%, rgba(4,6,11,0.05) 30%, rgba(4,6,11,0.6) 65%, rgba(4,6,11,0.96) 100%),
+                linear-gradient(90deg, rgba(4,6,11,0.78) 0%, rgba(4,6,11,0.45) 45%, rgba(4,6,11,0.30) 100%);
+        }
+        .hero-scan {
+            position: absolute; inset: 0; pointer-events: none;
+            background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+        }
+        .hero-content { position: relative; padding: clamp(28px, 5vw, 60px); min-height: clamp(440px, 62vw, 600px); display: flex; flex-direction: column; justify-content: flex-end; gap: 18px; }
+        .hero-title { font-family: 'Anton', sans-serif; font-size: clamp(54px, 11vw, 132px); line-height: 0.88; letter-spacing: -0.005em; color: #fff; }
+        .hero-title .accent { color: var(--gold); }
+        .hero-meta { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; }
+        .hero-vinyl-wrap { position: absolute; right: clamp(28px, 5vw, 60px); top: clamp(28px, 5vw, 60px); }
+        .hero-vinyl-wrap::before {
+            content: ""; position: absolute; inset: -28px;
+            background: radial-gradient(closest-side, rgba(4,6,11,0.6) 0%, rgba(4,6,11,0.25) 55%, transparent 75%);
+            pointer-events: none; z-index: -1;
+        }
+        @media (max-width: 720px) { .hero-vinyl-wrap { display: none; } }
+
+        /* CTA banner */
+        .cta-band {
+            position: relative; overflow: hidden;
+            background:
+                radial-gradient(120% 200% at 0% 0%, rgba(255,255,255,0.10), transparent 55%),
+                linear-gradient(95deg, #C81820 0%, #9E141B 55%, #5E0D11 100%);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+        }
+        .cta-band::after {
+            content: ""; position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0px, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+        .cta-headline { font-family: 'Anton', sans-serif; font-size: clamp(40px, 7vw, 80px); line-height: 0.88; color: #fff; letter-spacing: 0.005em; }
+
+        /* Lyric viewport */
+        .lyric-window {
+            background: linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.25));
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+        .lyric-window::before {
+            content: ""; position: absolute; inset: 0;
+            background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
+            pointer-events: none;
+        }
+
+        /* Tighten Tailwind utility overrides */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        ::selection { background: var(--red); color: #fff; }
+
+        /* Container */
+        .container-x { max-width: 1240px; margin: 0 auto; padding-left: 20px; padding-right: 20px; }
+        @media (min-width: 640px) { .container-x { padding-left: 28px; padding-right: 28px; } }
+        @media (min-width: 1024px) { .container-x { padding-left: 36px; padding-right: 36px; } }
+
+        /* Mobile rhythm */
+        @media (max-width: 720px) {
+            .section { margin-top: 40px; }
+            .section + .section { margin-top: 44px; }
+            .hero-meta { gap: 8px 12px; }
+        }
+
+        /* Reduced motion respect */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+            .drop { display: none; }
+        }
+    </style>
+
+    <script>
+        function handleImageError(img, type) {
+            if (type === 'pass') {
+                img.src = "https://i.scdn.co/image/ab67616d00001e027810ead6ae130dcb6455e890";
+            } else {
+                img.src = "https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890";
+            }
+            img.onerror = null;
+        }
+    </script>
+</head>
+<body class="font-sans">
+
+    <div class="atmosphere"></div>
+    <div class="grain"></div>
+    <div id="rain-container" class="rain-layer"></div>
+
+    <!-- ===== BROADCAST STRIP ===== -->
+    <div class="broadcast relative z-20">
+        <div class="container-x">
+            <div class="flex items-center gap-5 py-2.5">
+                <span class="flex items-center gap-2 shrink-0">
+                    <span class="live-dot"></span>
+                    <span style="color: var(--red); font-weight: 700;">ON&nbsp;AIR</span>
+                </span>
+                <span class="hidden sm:inline" style="color: var(--text-3);">REPUBLIKKEN&nbsp;BERGEN</span>
+                <span class="hidden md:inline" style="color: var(--text-3);">·</span>
+                <span class="overflow-hidden flex-1">
+                    <span class="marquee-track">
+                        <span class="px-6">RØSTEN &amp; LEFFE — «ERKEBERGENSER» UTE NÅ</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">GULLET SKA HEM</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">6 713 STRØMMINGER OG STIGENDE</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">HANSA KALD, HJERTET RØDT</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">SPILL DEN PÅ MAKS VOLUM</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">DET STÅ'SJE NORGE MEN BERGEN I PASSET MITT</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">RØSTEN &amp; LEFFE — «ERKEBERGENSER» UTE NÅ</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">GULLET SKA HEM</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">6 713 STRØMMINGER OG STIGENDE</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">HANSA KALD, HJERTET RØDT</span>
+                        <span class="sep">+</span>
+                        <span class="px-6">SPILL DEN PÅ MAKS VOLUM</span>
+                        <span class="sep">+</span>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN ===== -->
+    <main class="relative z-10 container-x" style="padding-top: 28px; padding-bottom: 80px;">
+
+        <!-- ===== HERO ===== -->
+        <section class="rise hero" style="animation-delay: 0.05s">
+            <div class="hero-bg">
+                <img id="hero-bg" src="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890"
+                     alt="Røsten & Leffe – Erkebergenser albumcover"
+                     onerror="handleImageError(this, 'cover')">
+            </div>
+            <div class="hero-veil"></div>
+            <div class="hero-scan"></div>
+
+            <!-- Vinyl, smaller, restrained -->
+            <div class="hero-vinyl-wrap">
+                <div class="relative w-28 h-28 lg:w-32 lg:h-32 rounded-full" style="background: #000; border: 4px solid #161616; box-shadow: 0 18px 40px rgba(0,0,0,0.5);">
+                    <div class="spin-vinyl w-full h-full rounded-full flex items-center justify-center">
+                        <img src="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890"
+                             alt="Cover" class="w-16 h-16 lg:w-20 lg:h-20 rounded-full object-cover"
+                             onerror="handleImageError(this, 'cover')">
+                    </div>
+                    <span class="absolute inset-0 m-auto w-2.5 h-2.5 rounded-full" style="background: var(--ink-0); border: 1px solid #2a2a2a;"></span>
+                </div>
+                <div class="text-center mt-2 micro" style="letter-spacing: 0.16em;">SIDE A · 03:14</div>
+            </div>
+
+            <div class="hero-content">
+                <!-- Top label row -->
+                <div class="flex flex-wrap items-center gap-3" style="margin-bottom: auto;">
+                    <span class="chip chip-red"><span class="live-dot"></span> NY SINGEL · 2026</span>
+                    <span class="chip">14.05.2026 · ISRC NOPOU2600001</span>
+                </div>
+
+                <div>
+                    <div class="eyebrow eyebrow-gold mb-3">RØSTEN &amp; LEFFE PRESENTERER</div>
+                    <h1 class="hero-title">ERKE-<br><span class="accent">BERGENSER</span></h1>
+                </div>
+
+                <div>
+                    <p class="font-display" style="font-size: clamp(15px, 1.6vw, 19px); letter-spacing: 0.04em; line-height: 1.35; color: var(--gold); max-width: 38ch;">
+                        «DET STÅ'SJE NORGE<br>MEN BERGEN I PASSET MITT»
+                    </p>
+                    <p class="lede mt-3" style="color: #C7CFDC; max-width: 52ch;">
+                        Republikken Bergens nye nasjonalsang. Tårevåt nostalgi møter hissig Brann-entusiasme,
+                        bygget for allsang i øsende regn.
+                    </p>
+                </div>
+
+                <div class="hero-meta">
+                    <a href="https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE"
+                       target="_blank" rel="noopener" class="btn btn-primary">
+                        <i class="fa-brands fa-spotify text-lg"></i> Spill på Spotify
+                    </a>
+                    <a href="https://www.youtube.com/watch?v=EcWQlSrhZgA"
+                       target="_blank" rel="noopener" class="btn btn-ghost">
+                        <i class="fa-brands fa-youtube"></i> Musikkvideo
+                    </a>
+                    <a href="#spilleren" class="link-mono">
+                        <span class="arr">↓</span> Hør i nettleseren
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== STATUS ROW: weather + ID ===== -->
+        <section class="rise" style="animation-delay: 0.12s; margin-top: 24px;">
+            <div class="surface" style="padding: 14px 18px;">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span id="live-met-widget" class="flex items-center gap-3">
+                            <i id="live-weather-icon" class="fa-solid fa-cloud-showers-heavy text-xl" style="color: var(--rain);"></i>
+                            <span>
+                                <span class="eyebrow eyebrow-rain block" style="line-height: 1;">LIVE · VÅGEN</span>
+                                <span id="live-temp" class="mono-num text-sm font-semibold block mt-1.5" style="color: var(--text-1);">Laster …</span>
+                            </span>
+                        </span>
+                        <span class="hidden sm:inline mx-2" style="color: var(--text-3);">|</span>
+                        <span id="live-desc" class="hidden sm:inline micro">Henter værdata fra Open-Meteo</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="chip"><span class="live-dot green"></span>OFFISIELL STRØM</span>
+                        <span class="chip chip-gold">REPUBLIKKEN BERGEN BROADCAST</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== PLAYER ===== -->
+        <section id="spilleren" class="rise section" style="animation-delay: 0.18s;">
+            <div class="section-head">
+                <div class="left">
+                    <div class="eyebrow eyebrow-red">SEKSJON 01 · LYTT</div>
+                    <h2>Hør «Erkebergenser» her og nå</h2>
+                </div>
+                <div class="right">DIREKTE FRA SPOTIFY</div>
+            </div>
+            <div class="surface" style="padding: 20px;">
+                <iframe style="border-radius: 12px; display: block;"
+                        src="https://open.spotify.com/embed/track/2JffeDCp1T5vQdQXrqKCnE"
+                        width="100%" height="152" frameborder="0"
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"
+                        title="Spotify: Erkebergenser av Røsten & Leffe"></iframe>
+            </div>
+        </section>
+
+        <!-- ===== RELEASE METRICS ===== -->
+        <section class="rise section" style="animation-delay: 0.22s;">
+            <div class="section-head">
+                <div class="left">
+                    <div class="eyebrow eyebrow-red"><span class="live-dot green" style="margin-right: 6px;"></span>SEKSJON 02 · LIVE TELEMETRI</div>
+                    <h2>Release-status</h2>
+                </div>
+                <div class="right">UTGITT 14.05.2026 · YOUTUBE&nbsp;LIVE · SPOTIFY&nbsp;MANUELT</div>
+            </div>
+
+            <div class="metric-grid">
+                <div class="metric-cell">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-brands fa-spotify" style="color: var(--green);"></i>
+                        <span class="eyebrow">Spotify · strømminger</span>
+                    </div>
+                    <div class="metric-value mono-num"><span id="sp-streams" class="counter" data-target="6713">0</span></div>
+                    <div class="metric-delta" style="color: var(--green);">▲ +652 / døgn i snitt</div>
+                    <div class="metric-source is-manual" id="sp-streams-source">
+                        <span class="src-dot"></span><span>Verifisert manuelt · <span data-verified-date>24.05.2026</span></span>
+                    </div>
+                </div>
+                <div class="metric-cell">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-fire" style="color: var(--green);"></i>
+                        <span class="eyebrow">Spotify · popularitet</span>
+                    </div>
+                    <div class="metric-value mono-num"><span id="sp-popularity" class="counter" data-target="27">0</span><span style="color: var(--text-3); font-size: 24px; margin-left: 6px;">%</span></div>
+                    <div class="metric-delta" style="color: var(--text-2);">▲ og stigende, jaggu</div>
+                    <div class="metric-source is-manual" id="sp-popularity-source">
+                        <span class="src-dot"></span><span>Verifisert manuelt · <span data-verified-date>24.05.2026</span></span>
+                    </div>
+                </div>
+                <div class="metric-cell">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-brands fa-youtube" style="color: var(--red);"></i>
+                        <span class="eyebrow">YouTube · avspillinger</span>
+                    </div>
+                    <div class="metric-value mono-num"><span id="yt-viewcount" class="counter" data-target="1213">0</span></div>
+                    <div class="metric-delta" style="color: var(--red);" id="yt-viewcount-delta">▲ 55,2 % ser hele videoen</div>
+                    <div class="metric-source" id="yt-viewcount-source">
+                        <span class="src-dot"></span><span>Henter fra YouTube Data API …</span>
+                    </div>
+                </div>
+                <div class="metric-cell">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-clock" style="color: var(--gold);"></i>
+                        <span class="eyebrow">Samlet seertid</span>
+                    </div>
+                    <div class="metric-value mono-num"><span class="counter" data-target="39" data-decimal="5">0</span><span style="color: var(--text-3); font-size: 24px; margin-left: 6px;">t</span></div>
+                    <div class="metric-delta" style="color: var(--gold);">▲ timer med ren stolthet</div>
+                    <div class="metric-source is-manual">
+                        <span class="src-dot"></span><span>Avledet · <span data-verified-date>24.05.2026</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== KARAOKE (full-width) ===== -->
+        <section class="rise section" style="animation-delay: 0.28s;">
+            <div class="section-head">
+                <div class="left">
+                    <div class="eyebrow eyebrow-red">SEKSJON 03 · ALLSANG</div>
+                    <h2>Syng med — patriot-allsang</h2>
+                </div>
+                <div class="right">SLÅ&nbsp;PÅ&nbsp;LYDEN</div>
+            </div>
+
+            <div class="surface" style="padding: clamp(20px, 3vw, 32px);">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                    <!-- Vinyl + controls -->
+                    <div class="md:col-span-4 flex flex-col items-center gap-5">
+                        <div class="relative w-36 h-36 lg:w-44 lg:h-44 rounded-full" style="background: #000; border: 4px solid #161616; box-shadow: 0 18px 40px rgba(0,0,0,0.5);">
+                            <div class="w-full h-full rounded-full flex items-center justify-center">
+                                <img id="vinyl-art" src="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890"
+                                     alt="Cover" class="w-20 h-20 lg:w-24 lg:h-24 rounded-full object-cover"
+                                     onerror="handleImageError(this, 'cover')">
+                            </div>
+                            <span class="absolute inset-0 m-auto w-3 h-3 rounded-full" style="background: var(--ink-0); border: 1px solid #2a2a2a;"></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button id="play-btn" onclick="toggleKaraoke()"
+                                    class="w-12 h-12 rounded-full flex items-center justify-center transition active:scale-90"
+                                    style="background: var(--red); color: #fff;">
+                                <i id="play-icon" class="fa-solid fa-play"></i>
+                            </button>
+                            <button onclick="resetKaraoke()"
+                                    class="w-12 h-12 rounded-full flex items-center justify-center transition active:scale-90"
+                                    style="background: var(--ink-3); color: var(--text-2); border: 1px solid var(--line);">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        </div>
+                        <a href="https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE"
+                           target="_blank" rel="noopener" class="micro hover:text-white transition" style="text-decoration: underline; text-underline-offset: 4px;">
+                            ÅPNE I SPOTIFY ↗
+                        </a>
+                    </div>
+
+                    <!-- Lyric screen + drums -->
+                    <div class="md:col-span-8 space-y-4">
+                        <div class="lyric-window" style="padding: 24px; min-height: 192px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div class="flex items-center justify-between">
+                                <span class="micro" style="color: var(--text-3);">SYNG&nbsp;MED · OFFISIELL ALLSANGTEKST</span>
+                                <span class="micro" style="color: var(--red);">LIVE</span>
+                            </div>
+                            <div class="text-center px-2 py-4">
+                                <p id="karaoke-line-1" class="text-lg sm:text-xl font-bold text-white leading-snug transition duration-300" style="text-wrap: balance;">Eg e født i byen kor det regner litt</p>
+                                <p id="karaoke-line-2" class="text-sm mt-2 transition duration-300" style="color: var(--text-2); text-wrap: balance;">Født blant fjell har alltid manglet selvinnsikt</p>
+                            </div>
+                            <div class="w-full h-[2px] rounded-full overflow-hidden" style="background: var(--ink-3);">
+                                <div id="karaoke-progress" class="h-full transition-all duration-300" style="width: 0; background: var(--red);"></div>
+                            </div>
+                        </div>
+
+                        <div class="surface-inset" style="padding: 14px 16px;">
+                            <div class="flex items-center justify-between gap-3 mb-3">
+                                <span id="drum-beat-label" class="micro" style="color: var(--gold);">KLAR TIL Å BRÅKE</span>
+                                <div class="flex gap-2">
+                                    <button onclick="playDrumBeat('takt')" class="tab" style="color: var(--gold); border-color: rgba(201,164,85,0.3);">
+                                        <i class="fa-solid fa-drum mr-1"></i> Marsjtakt
+                                    </button>
+                                    <button onclick="playDrumBeat('virvel')" class="tab" style="color: var(--red); border-color: rgba(227,27,35,0.3);">
+                                        <i class="fa-solid fa-bolt mr-1"></i> Virvel
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="w-full h-[3px] rounded-full overflow-hidden" style="background: var(--ink-3);">
+                                <div id="drum-indicator" class="h-full origin-left transition-transform duration-100" style="background: linear-gradient(90deg, var(--gold), var(--red)); width: 100%; transform: scaleX(0);"></div>
+                            </div>
+                            <p class="micro mt-3" style="color: var(--text-3);">Trykk play for allsang med ekte buekorps-trommer.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== DASHBOARD GRID ===== -->
+        <section class="rise section" style="animation-delay: 0.34s;">
+            <div class="section-head">
+                <div class="left">
+                    <div class="eyebrow eyebrow-gold">SEKSJON 04 · KONTROLLROM</div>
+                    <h2>Republikkens målinger</h2>
+                </div>
+                <div class="right">PASS · BRANN · VÆR · ORDBOK</div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- LEFT: Pass -->
+                <div class="lg:col-span-5 space-y-6">
+
+                    <!-- Pass module -->
+                    <div class="surface" style="padding: 24px;">
+                        <div class="flex items-center justify-between mb-5">
+                            <div>
+                                <div class="eyebrow eyebrow-gold">DOK · 01</div>
+                                <h3 class="font-display text-2xl mt-1" style="color: var(--text-1);">Det erkebergenske passet</h3>
+                            </div>
+                            <i class="fa-solid fa-passport text-xl" style="color: var(--gold);"></i>
+                        </div>
+
+                        <!-- Pass card preview -->
+                        <div class="pass">
+                            <span class="pass-corner tl"></span>
+                            <span class="pass-corner tr"></span>
+                            <span class="pass-corner bl"></span>
+                            <span class="pass-corner br"></span>
+
+                            <!-- Cover: the burgundy passport -->
+                            <div class="pass-cover">
+                                <img id="pass-bg"
+                                     src="assets/bergen-pass-cover.png"
+                                     alt="Erkebergensk pass — offisielt omslag"
+                                     onerror="handleImageError(this, 'pass')">
+                                <div class="pass-grain"></div>
+                                <div class="absolute top-3 left-3 right-3 flex justify-between items-start z-[1]">
+                                    <div style="background: rgba(15,3,6,0.55); backdrop-filter: blur(4px); border: 1px solid rgba(201,164,85,0.3); padding: 4px 10px; border-radius: 999px;">
+                                        <span class="eyebrow eyebrow-gold" style="font-size: 9px;">REPUBLIKKEN BERGEN</span>
+                                    </div>
+                                    <div class="font-mono text-[10px] px-2 py-1 rounded" style="color: var(--gold); border: 1px solid rgba(201,164,85,0.45); background: rgba(15,3,6,0.55); backdrop-filter: blur(4px); letter-spacing: 0.1em;">
+                                        REGN-98-R&amp;L
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pass-rule"></div>
+
+                            <!-- Body: identity data -->
+                            <div class="pass-body">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <div class="eyebrow eyebrow-gold" style="font-size: 9px;">DOK · TYPE</div>
+                                        <div class="font-mono text-[11px] font-bold mt-1" style="color: var(--text-1); letter-spacing: 0.14em;">ERKEBERGENSK PASS</div>
+                                    </div>
+                                    <div class="font-mono text-[9px] uppercase tracking-widest" style="color: rgba(201,164,85,0.6);">Utstedt · 2026</div>
+                                </div>
+
+                                <div class="flex gap-4">
+                                    <div class="w-16 h-20 rounded-md border flex items-center justify-center relative overflow-hidden shrink-0"
+                                         style="border-color: rgba(201,164,85,0.4); background: rgba(0,0,0,0.5);">
+                                        <svg class="w-10 h-10" style="color: rgba(201,164,85,0.4);" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        <span class="absolute bottom-0 inset-x-0 text-[8px] font-bold text-center py-0.5 font-mono uppercase" style="background: rgba(201,164,85,0.25); color: #f0d99a;">Kjuagutt</span>
+                                    </div>
+
+                                    <div class="text-left space-y-1 font-mono text-[10.5px] flex-1 min-w-0">
+                                        <div>
+                                            <div class="text-[8.5px] uppercase tracking-widest" style="color: rgba(201,164,85,0.6);">Borgernavn</div>
+                                            <div id="pass-name" class="text-white text-[13px] font-bold truncate">Leffe Johannessen</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[8.5px] uppercase tracking-widest" style="color: rgba(201,164,85,0.6);">Fødested</div>
+                                            <div id="pass-birth" style="color: #f0d99a;">Kvinneklinikken (KK)</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[8.5px] uppercase tracking-widest" style="color: rgba(201,164,85,0.6);">Foretrukket fjell</div>
+                                            <div id="pass-mountain" style="color: #f0d99a;">Ulriken (643 m)</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-[8.5px] uppercase tracking-widest" style="color: rgba(201,164,85,0.6);">Holdning</div>
+                                            <div id="pass-attitude" style="color: #ff5a62; font-weight: 700;">Beliter seg ALDRI!</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between items-end mt-4 pt-3 text-[9px] font-mono uppercase tracking-widest" style="border-top: 1px solid rgba(201,164,85,0.18); color: rgba(201,164,85,0.6);">
+                                    <div>Status: <span style="color: #f0d99a;">Godkjent patriot</span></div>
+                                    <div>Sign: <span style="color: #f0d99a; font-style: italic; text-transform: none; letter-spacing: 0.02em;">Røsten &amp; Leffe</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form -->
+                        <div class="mt-5 space-y-3">
+                            <div>
+                                <label class="field-label">Ditt navn</label>
+                                <input id="input-name" type="text" value="Leffe Johannessen" class="field">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="field-label">Fødested</label>
+                                    <select id="input-birth" class="field">
+                                        <option value="Kvinneklinikken (KK)">Kvinneklinikken (KK)</option>
+                                        <option value="Haukeland Sykehus">Haukeland Sykehus</option>
+                                        <option value="Ombord i en Hansa-skøyte">Hansa-skøyte</option>
+                                        <option value="Eksil på Østlandet">Eksil (skeptisk)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="field-label">Hovedfjell</label>
+                                    <select id="input-mountain" class="field">
+                                        <option value="Ulriken (643 m)">Ulriken</option>
+                                        <option value="Fløyen (400 m)">Fløyen</option>
+                                        <option value="Løvstakken (477 m)">Løvstakken</option>
+                                        <option value="Sandviksfjellet">Sandviksfjellet</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <label class="flex items-center gap-2 select-none cursor-pointer pt-1">
+                                <input id="input-belite" type="checkbox" checked class="rounded accent-amber-500" style="width: 14px; height: 14px;">
+                                <span class="text-[12px]" style="color: var(--text-2);">Nekter å «belite» meg ved enhver diskusjon.</span>
+                            </label>
+
+                            <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <button onclick="oppdaterPass()" class="btn btn-sm btn-ghost justify-center">
+                                    Oppdater billetten
+                                </button>
+                                <button onclick="delPass()" class="btn btn-sm btn-ghost justify-center">
+                                    <i class="fa-solid fa-share-nodes"></i> Del passet
+                                </button>
+                            </div>
+                            <button onclick="lastNedPass()" id="download-btn" class="btn btn-gold w-full justify-center">
+                                <i class="fa-solid fa-download"></i> Last ned som bilde (Instagram / Snap)
+                            </button>
+                            <p id="del-status" class="text-[11px] text-center font-mono" style="color: var(--gold); min-height: 14px;"></p>
+                        </div>
+                    </div>
+
+                    <!-- Dictionary -->
+                    <div class="surface" style="padding: 24px;">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <div class="eyebrow eyebrow-red">DOK · 02</div>
+                                <h3 class="font-display text-2xl mt-1" style="color: var(--text-1);">Strila-oversetteren</h3>
+                            </div>
+                            <i class="fa-solid fa-language text-xl" style="color: var(--red);"></i>
+                        </div>
+                        <p class="lede text-[13px] mb-4">Forstå bergenske gloser før du begir deg inn på smitt og smau:</p>
+                        <div class="grid grid-cols-2 gap-2" id="dictionary-grid"></div>
+                        <div class="surface-deep mt-4" style="padding: 14px 16px; min-height: 72px;">
+                            <span class="eyebrow eyebrow-red">BETYDNING</span>
+                            <p id="translation-output" class="text-[13px] italic mt-1.5" style="color: var(--text-1);">Klikk på en av de erkebergenske glosene over …</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT: Brann + Rain + Charts -->
+                <div class="lg:col-span-7 space-y-6">
+
+                    <!-- SK Brann realitets-indeks -->
+                    <div class="surface" style="padding: 24px;">
+                        <div class="flex items-start justify-between gap-4 mb-6 flex-wrap">
+                            <div>
+                                <div class="eyebrow eyebrow-red"><span class="live-dot" style="margin-right: 6px;"></span>SANNTID</div>
+                                <h3 class="font-display text-2xl mt-1" style="color: var(--text-1);">SK Brann realitets-indeks <span class="font-sans text-base" style="color: var(--text-3); font-weight: 400; letter-spacing: 0;">(sanntid)</span></h3>
+                                <p class="lede text-[13px] mt-1">Måler troen på at «Gullet ska hem» og låtens avspillingsfart.</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="simulerBrann('tap')" class="btn btn-sm btn-ghost">
+                                    Simuler tap
+                                </button>
+                                <button onclick="simulerBrann('seier')" class="btn btn-sm btn-red">
+                                    Simuler seier
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                            <!-- Gauge -->
+                            <div class="md:col-span-5 flex flex-col items-center">
+                                <svg viewBox="0 0 200 120" class="w-full max-w-[260px]">
+                                    <!-- Track -->
+                                    <path d="M 20 110 A 80 80 0 0 1 180 110" fill="none" class="gauge-track" stroke-width="10" stroke-linecap="round"/>
+                                    <!-- Fill (full arc length ≈ 251) -->
+                                    <path id="gauge-arc" d="M 20 110 A 80 80 0 0 1 180 110" fill="none" class="gauge-fill" stroke-width="10" stroke-linecap="round"
+                                          stroke-dasharray="251" stroke-dashoffset="38"/>
+                                    <!-- Needle (rotated via transform on group) -->
+                                    <g id="gauge-needle" transform="rotate(53 100 110)" style="transform-origin: 100px 110px; transition: transform .8s cubic-bezier(.22,1,.36,1);">
+                                        <line x1="100" y1="110" x2="100" y2="40" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+                                        <circle cx="100" cy="110" r="5" fill="#fff"/>
+                                    </g>
+                                    <!-- Ticks -->
+                                    <g stroke="rgba(255,255,255,0.3)" stroke-width="1">
+                                        <line x1="22" y1="100" x2="28" y2="103"/>
+                                        <line x1="100" y1="20" x2="100" y2="28"/>
+                                        <line x1="178" y1="100" x2="172" y2="103"/>
+                                    </g>
+                                </svg>
+                                <div class="micro mt-2">GULLET SKA HEM-INDEKS</div>
+                                <div id="hype-percentage" class="font-display text-3xl mt-1 mono-num" style="color: var(--red);">85 %</div>
+                                <!-- Keep legacy hidden node for backward compat -->
+                                <div id="hype-needle" style="display:none;"></div>
+                            </div>
+
+                            <!-- Stats -->
+                            <div class="md:col-span-7 space-y-3">
+                                <div class="surface-inset" style="padding: 16px 18px;">
+                                    <span class="eyebrow eyebrow-red">ANTHEM-HYPE</span>
+                                    <p id="hype-description" class="text-[14px] mt-2 leading-relaxed" style="color: var(--text-1);">Borgerskapet har satt Røsten &amp; Leffe på repetisjon. Allsang i buekorpsrekkene meldes fra hele byen.</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="surface-deep" style="padding: 14px;">
+                                        <span class="eyebrow">TORGALLMENNINGEN</span>
+                                        <div id="stat-torg" class="mono-num text-base font-bold mt-1.5" style="color: var(--text-1);">12 500 pers/kvm</div>
+                                    </div>
+                                    <div class="surface-deep" style="padding: 14px;">
+                                        <span class="eyebrow">STRILSK SKEPSIS</span>
+                                        <div id="stat-skeptisk" class="mono-num text-base font-bold mt-1.5" style="color: var(--text-1);">Kritisk lav (0,2)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rain simulator -->
+                    <div class="surface" style="padding: 24px;">
+                        <div class="flex items-start justify-between gap-4 mb-4 flex-wrap">
+                            <div>
+                                <div class="eyebrow eyebrow-rain">VÆR-OVERSTYRING</div>
+                                <h3 class="font-display text-2xl mt-1" style="color: var(--text-1);">Regnsimulator</h3>
+                            </div>
+                            <span id="rain-label" class="chip chip-rain">Normalt Bergensøs</span>
+                        </div>
+                        <p class="lede text-[13px] mb-5">Når live-været fra Open-Meteo blir for kjedelig, kan du manuelt skru opp til apokalyptiske tilstander. Bakgrunnsregnet reagerer umiddelbart.</p>
+                        <input id="rain-slider" type="range" min="0" max="100" value="60" class="rain-range w-full">
+                        <div class="flex justify-between micro mt-2" style="color: var(--text-3);">
+                            <span>SOLSKINN</span>
+                            <span>BYGE</span>
+                            <span>EKSTREMVÆR «JAKOB»</span>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="surface" style="padding: 24px;">
+                        <div class="flex items-start justify-between gap-4 mb-4 flex-wrap">
+                            <div>
+                                <div class="eyebrow eyebrow-gold">SANNHETS-GRAFER</div>
+                                <h3 class="font-display text-2xl mt-1" style="color: var(--text-1);">Bergensk telemetri</h3>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-5">
+                            <button id="tab-btn-rain" onclick="switchChart('rain')" class="tab is-active">Regnbyger</button>
+                            <button id="tab-btn-hansa" onclick="switchChart('hansa')" class="tab">Hansa vs. Ringnes</button>
+                            <button id="tab-btn-umbrella" onclick="switchChart('umbrella')" class="tab">Paraply-forbruk</button>
+                            <button id="tab-btn-streams" onclick="switchChart('streams')" class="tab">Strømming</button>
+                        </div>
+                        <div class="h-72 w-full relative">
+                            <canvas id="analyticsChart"></canvas>
+                        </div>
+                        <p id="chart-caption" class="micro mt-4 italic" style="color: var(--text-3);">Snittnedbør i Bergen per måned (mm). Spoiler: det regner alltid.</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== CTA ===== -->
+        <section class="rise section">
+            <div class="cta-band">
+                <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 items-center" style="padding: clamp(28px, 5vw, 56px);">
+                    <div>
+                        <div class="micro" style="color: rgba(255,255,255,0.7); letter-spacing: 0.22em;">SOUNDTRACKET TIL STOLTHETEN</div>
+                        <h3 class="cta-headline mt-2">GULLET<br>SKA HEM</h3>
+                        <p class="mt-4 text-[14px]" style="color: rgba(255,255,255,0.85); max-width: 44ch;">
+                            Hver eneste avspilling av «Erkebergenser» løfter byens kollektive humør med målbare prosenter. Gjør din borgerplikt — sett den på repeat.
+                        </p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row md:justify-end gap-3">
+                        <a href="https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE"
+                           target="_blank" rel="noopener" class="btn btn-primary justify-center">
+                            <i class="fa-brands fa-spotify text-lg"></i> Spill nå
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=EcWQlSrhZgA"
+                           target="_blank" rel="noopener" class="btn justify-center"
+                           style="background: rgba(0,0,0,0.35); color: #fff; border: 1px solid rgba(255,255,255,0.25);">
+                            <i class="fa-brands fa-youtube"></i> Se videoen
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="mt-16 pt-10" style="border-top: 1px solid var(--line);">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 micro" style="color: var(--text-3);">
+                <div>
+                    <div class="eyebrow eyebrow-gold mb-2">REPUBLIKKEN BERGEN BROADCAST</div>
+                    <p style="color: var(--text-2); font-family: 'Outfit'; font-size: 13px; line-height: 1.6; letter-spacing: 0;">© 2026 Republikken Bergen analytics. Utgitt i nært samarbeid med Røsten &amp; Leffe.</p>
+                </div>
+                <div>
+                    <div class="eyebrow mb-2">UTGIVELSE</div>
+                    <p style="color: var(--text-2); font-family: 'Outfit'; font-size: 13px; line-height: 1.6; letter-spacing: 0;">«Erkebergenser» av Ruben Røsten &amp; Leffe Johannessen · distribuert av RØSTEN ENT. · utgitt 15. mai 2026.</p>
+                </div>
+                <div>
+                    <div class="eyebrow mb-2">FORBEHOLD</div>
+                    <p style="color: var(--text-2); font-family: 'Outfit'; font-size: 13px; line-height: 1.6; letter-spacing: 0;">All data er korrigert for bergensk overlegenhet. Strømmetall er ekte; resten er kjærlig satire.</p>
+                </div>
+            </div>
+            <div class="micro mt-10 text-center" style="color: var(--text-3);">
+                NOPOU2600001 · 60.39°N 5.32°Ø · END&nbsp;OF&nbsp;TRANSMISSION
+            </div>
+        </footer>
+    </main>
+
+    <!-- ============ SKJULT DELKORT (rendres til bilde for Instagram/Snap) ============ -->
+    <div id="share-card-wrapper" style="position: fixed; left: -9999px; top: 0; pointer-events: none;">
+        <div id="share-card" style="width: 1080px; height: 1350px; position: relative; overflow: hidden;
+                    background: linear-gradient(160deg, #1a0608 0%, #05070C 55%, #0a0d14 100%);
+                    font-family: 'Outfit', sans-serif; color: #F1F5F9;">
+
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 560px; overflow: hidden; background: #1d0509;">
+                <img id="share-cover"
+                     src="assets/bergen-pass-cover.png"
+                     style="width: 100%; height: 100%; object-fit: cover; object-position: center 12%;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(15,3,6,0.05) 0%, rgba(15,3,6,0.35) 55%, rgba(15,3,6,0.92) 90%, #05070C 100%);"></div>
+            </div>
+
+            <div style="position: absolute; top: 56px; left: 56px; right: 56px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="background: #E31B23; color: #fff; font-weight: 900; font-size: 22px; letter-spacing: 4px; text-transform: uppercase; padding: 10px 22px; border-radius: 999px;">
+                    Republikken Bergen
+                </div>
+                <div style="background: rgba(201,164,85,0.2); color: #C9A455; border: 2px solid rgba(201,164,85,0.5); font-family: 'JetBrains Mono', monospace; font-size: 18px; padding: 8px 16px; border-radius: 10px;">
+                    REGN-98-R&amp;L
+                </div>
+            </div>
+
+            <div style="position: absolute; top: 470px; left: 56px; right: 56px;">
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; letter-spacing: 4px; color: rgba(201,164,85,0.85); text-transform: uppercase; margin-bottom: 8px;">Det stå'sje Norge men Bergen i passet mitt</div>
+                <div style="font-family: 'Anton', sans-serif; font-size: 84px; line-height: 0.9; color: #fff; text-shadow: 0 4px 20px rgba(0,0,0,0.8);">
+                    ERKEBERGENSK
+                </div>
+                <div style="font-family: 'Anton', sans-serif; font-size: 84px; line-height: 0.9; color: #C9A455;">
+                    PASS
+                </div>
+            </div>
+
+            <div style="position: absolute; top: 690px; left: 56px; right: 56px; bottom: 230px;
+                        background: rgba(13,18,30,0.85); border: 2px solid rgba(201,164,85,0.3);
+                        border-radius: 32px; padding: 44px 48px;">
+                <div style="display: flex; gap: 36px; align-items: flex-start;">
+                    <div style="width: 150px; height: 190px; border-radius: 20px; border: 2px solid rgba(201,164,85,0.5);
+                                background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; overflow: hidden;">
+                        <svg width="90" height="90" viewBox="0 0 24 24" fill="rgba(201,164,85,0.45)">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(201,164,85,0.3); color: #fde68a; font-size: 15px; font-weight: 700; text-align: center; padding: 6px 0; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">Kjuagutt</span>
+                    </div>
+                    <div style="flex: 1; font-family: 'JetBrains Mono', monospace;">
+                        <div style="margin-bottom: 20px;">
+                            <div style="color: rgba(201,164,85,0.7); font-size: 16px; text-transform: uppercase; letter-spacing: 2px;">Borgernavn</div>
+                            <div id="share-name" style="color: #fff; font-size: 38px; font-weight: 700;">Leffe Johannessen</div>
+                        </div>
+                        <div style="display: flex; gap: 40px; margin-bottom: 20px;">
+                            <div>
+                                <div style="color: rgba(201,164,85,0.7); font-size: 15px; text-transform: uppercase; letter-spacing: 2px;">Fødested</div>
+                                <div id="share-birth" style="color: #fde68a; font-size: 22px; font-weight: 500;">Kvinneklinikken (KK)</div>
+                            </div>
+                            <div>
+                                <div style="color: rgba(201,164,85,0.7); font-size: 15px; text-transform: uppercase; letter-spacing: 2px;">Hovedfjell</div>
+                                <div id="share-mountain" style="color: #fde68a; font-size: 22px; font-weight: 500;">Ulriken (643 m)</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="color: rgba(201,164,85,0.7); font-size: 15px; text-transform: uppercase; letter-spacing: 2px;">Holdning</div>
+                            <div id="share-attitude" style="color: #E31B23; font-size: 26px; font-weight: 700;">Beliter seg ALDRI!</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 36px; padding-top: 28px; border-top: 2px solid rgba(201,164,85,0.2); display: flex; justify-content: space-between; align-items: center; font-family: 'JetBrains Mono', monospace;">
+                    <div style="color: rgba(201,164,85,0.7); font-size: 18px;">Status: <span style="color: #fde68a; font-weight: 700;">Godkjent patriot</span></div>
+                    <div style="color: rgba(201,164,85,0.7); font-size: 18px; font-style: italic;">Røsten &amp; Leffe</div>
+                </div>
+            </div>
+
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 200px; background: #E31B23; display: flex; align-items: center; justify-content: space-between; padding: 0 56px;">
+                <div>
+                    <div style="font-size: 20px; font-weight: 600; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 2px;">Soundtracket til stoltheten</div>
+                    <div style="font-family: 'Anton', sans-serif; font-size: 52px; color: #fff; line-height: 1;">«ERKEBERGENSER»</div>
+                    <div style="font-size: 24px; color: rgba(255,255,255,0.9); font-weight: 600;">Røsten &amp; Leffe · ute på Spotify &amp; YouTube</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="width: 96px; height: 96px; border-radius: 50%; background: #1DB954; display: flex; align-items: center; justify-content: center;">
+                        <svg width="56" height="56" viewBox="0 0 24 24" fill="#000"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.561.3z"/></svg>
+                    </div>
+                    <div style="color: #fff; font-size: 14px; margin-top: 8px; font-weight: 700; letter-spacing: 1px;">SPILL DEN!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ Lydeffekter (Web Audio API) ============ -->
+    <script>
+        let audioCtx = null;
+        function getAudioCtx() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSnareSound(duration = 0.15) {
+            const ctx = getAudioCtx();
+            const bufferSize = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 1000;
+
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+            noise.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            noise.start();
+        }
+    </script>
+
+    <!-- ============ Applikasjonslogikk ============ -->
+    <script>
+        // ---------- Datakonfigurasjon ----------
+        // Én plass for alt som handler om hvilke tall som vises og hvor de
+        // kommer fra. Endrer du Spotify-tallene, oppdater også verifiedDate.
+        const DATA_CONFIG = {
+            youtube: {
+                videoId: 'EcWQlSrhZgA',           // Erkebergenser — musikkvideo
+                // Serverless proxy som holder API-nøkkelen skjult. Se
+                // netlify/functions/youtube-stats.js og README-DATA.md.
+                endpoint: '/api/youtube-stats',
+                refreshMs: 5 * 60 * 1000,          // 5 min — matcher CDN-cache
+                // Placeholder/fallback hvis API er nede eller nøkkel mangler.
+                fallbackViewCount: 1213
+            },
+            spotify: {
+                trackId: '2JffeDCp1T5vQdQXrqKCnE',
+                // Spotify Web API gir IKKE total stream count i offentlig API.
+                // Disse verdiene må derfor oppdateres manuelt fra Spotify for
+                // Artists. Hold verifiedDate i sync når du justerer dem.
+                streams: 6713,
+                popularity: 27,                    // 0–100 (popularitets-score)
+                verifiedDate: '24.05.2026',
+                verifiedSource: 'Spotify for Artists'
+            }
+        };
+
+        // ---------- Ordbok ----------
+        const gloser = {
+            "Belite seg": "Å godta spilleregler eller innse nederlag. Erkebergensere og buekorpsgutter gjør aldri dette. Det belites overhodet ikke.",
+            "Månebedotten": "Å være fullstendig målløs. Typisk reaksjon når man oppdager at en østfolding prøver å bestille Hansa Pilsner.",
+            "Tjommi": "Ekte bergensk kompis. En du synger Røsten & Leffe-låter sammen med på vei over Torgallmenningen.",
+            "Bekaltrert": "Tilstanden man oppnår etter nøyaktig 5,5 Hansapils på Zachariasbryggen mens SK Brann herjer.",
+            "Boss": "Søppel. Kastes utelukkende i dertil egnede bossspann, aldri på de vakre brosteinene våre.",
+            "Måse": "Bergen sentrums ubestridte tyrann. Ekstremt gassno på skillingsbollen din.",
+            "Tidi": "Morsomt eller underholdende. For eksempel raserianfallene østlandske fotballeksperter får når Brann vinner.",
+            "Gassno": "Sulten på godbiter, enten det er salt lakris eller en kald en fra Hansa Bryggeri."
+        };
+
+        // ---------- Karaoke ----------
+        // Refreng + utvalgte vers fra «Erkebergenser» — Røsten & Leffe
+        const karaokeLyrics = [
+            { text: "Eg e født i byen kor det regner litt",         sub: "Født blant fjell har alltid manglet selvinnsikt" },
+            { text: "Eg ble nok født med Brann i blodet mitt",      sub: "Det stå'sje Norge men Bergen i passet mitt!" },
+            { text: "Det blir et helvetes leven det kommer til å smelle", sub: "Eg anbefaler Oslo-folk å holde seg hjemme" },
+            { text: "Det går kun i Hansa alt annet e for slapt",    sub: "Brygge neri Oslo smaker barnehagesaft" },
+            { text: "No skal vi farge byen rød det e et vakkert syn", sub: "Dette blir nok første gangen det e liv i by'n!" },
+            { text: "Vi stiller alle mann med drakt skjerf og luar",  sub: "Hele Bergen stiller kokende idioter" },
+            { text: "Den 12. Mann vil stå å synge Nystemten inn",     sub: "Når 11 mann går i krigen for blodbyen sin!" }
+        ];
+
+        let currentKaraokeIndex = 0;
+        let karaokeInterval = null;
+        let isKaraokePlaying = false;
+
+        function toggleKaraoke() {
+            const playIcon = document.getElementById("play-icon");
+            const vinyl = document.getElementById("vinyl-art").parentElement;
+
+            if (isKaraokePlaying) {
+                clearInterval(karaokeInterval);
+                playIcon.className = "fa-solid fa-play";
+                vinyl.classList.remove("spin-vinyl");
+                isKaraokePlaying = false;
+            } else {
+                playIcon.className = "fa-solid fa-pause";
+                vinyl.classList.add("spin-vinyl");
+                isKaraokePlaying = true;
+                runLyricLoop();
+            }
+        }
+
+        function runLyricLoop() {
+            const progress = document.getElementById("karaoke-progress");
+            const line1 = document.getElementById("karaoke-line-1");
+            const line2 = document.getElementById("karaoke-line-2");
+            const intervalTime = 3000;
+
+            playDrumBeat('takt');
+
+            const showLine = () => {
+                const currentLine = karaokeLyrics[currentKaraokeIndex];
+                line1.innerText = currentLine.text;
+                line2.innerText = currentLine.sub;
+                playSnareSound(0.2);
+                currentKaraokeIndex = (currentKaraokeIndex + 1) % karaokeLyrics.length;
+                progress.style.width = `${((currentKaraokeIndex) / karaokeLyrics.length) * 100 || 100}%`;
+            };
+            showLine();
+            karaokeInterval = setInterval(showLine, intervalTime);
+        }
+
+        function resetKaraoke() {
+            clearInterval(karaokeInterval);
+            isKaraokePlaying = false;
+            currentKaraokeIndex = 0;
+            document.getElementById("play-icon").className = "fa-solid fa-play";
+            document.getElementById("vinyl-art").parentElement.classList.remove("spin-vinyl");
+            document.getElementById("karaoke-progress").style.width = "0%";
+            document.getElementById("karaoke-line-1").innerText = "Eg e født i byen kor det regner litt";
+            document.getElementById("karaoke-line-2").innerText = "Født blant fjell har alltid manglet selvinnsikt";
+        }
+
+        // ---------- Pass ----------
+        function oppdaterPass() {
+            const navn = document.getElementById("input-name").value || "Anonym Kjuagutt";
+            const fodested = document.getElementById("input-birth").value;
+            const fjell = document.getElementById("input-mountain").value;
+            const belite = document.getElementById("input-belite").checked;
+
+            document.getElementById("pass-name").innerText = navn;
+            document.getElementById("pass-birth").innerText = fodested;
+            document.getElementById("pass-mountain").innerText = fjell;
+            document.getElementById("pass-attitude").innerText = belite ? "Beliter seg ALDRI!" : "Måtte til slutt belite seg";
+        }
+
+        // ---------- Del passet ----------
+        async function delPass() {
+            oppdaterPass();
+            const navn = document.getElementById("pass-name").innerText;
+            const fjell = document.getElementById("pass-mountain").innerText;
+            const holdning = document.getElementById("pass-attitude").innerText;
+            const status = document.getElementById("del-status");
+            const laat = "https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE";
+
+            const tekst =
+                `🔴🟡 ERKEBERGENSK PASS 🟡🔴\n` +
+                `Borger: ${navn}\n` +
+                `Hovedfjell: ${fjell}\n` +
+                `Holdning: ${holdning}\n` +
+                `Status: Godkjent patriot i Republikken Bergen.\n\n` +
+                `Soundtracket til stoltheten: «Erkebergenser» av Røsten & Leffe 🎶\n${laat}`;
+
+            const visStatus = (melding, farge) => {
+                status.innerText = melding;
+                status.style.color = farge;
+                setTimeout(() => { status.innerText = ""; }, 4000);
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: "Mitt erkebergenske pass", text: tekst, url: laat });
+                    visStatus("Takk for at du sprer den bergenske stoltheten! 🔴", "#34D399");
+                    return;
+                } catch (err) {
+                    if (err && err.name === "AbortError") return;
+                }
+            }
+
+            try {
+                await navigator.clipboard.writeText(tekst);
+                visStatus("Passet er kopiert! Lim det inn der du vil. 📋", "#FBBF24");
+            } catch (err) {
+                const ta = document.createElement("textarea");
+                ta.value = tekst; ta.style.position = "fixed"; ta.style.opacity = "0";
+                document.body.appendChild(ta); ta.select();
+                try { document.execCommand("copy"); visStatus("Passet er kopiert! 📋", "#FBBF24"); }
+                catch (e) { visStatus("Kunne ikke dele automatisk – kopier teksten manuelt.", "#F87171"); }
+                document.body.removeChild(ta);
+            }
+        }
+
+        // ---------- Last ned passet som bilde (html2canvas) ----------
+        async function lastNedPass() {
+            oppdaterPass();
+            const btn = document.getElementById("download-btn");
+            const status = document.getElementById("del-status");
+            const originalBtn = btn.innerHTML;
+
+            document.getElementById("share-name").innerText = document.getElementById("pass-name").innerText;
+            document.getElementById("share-birth").innerText = document.getElementById("pass-birth").innerText;
+            document.getElementById("share-mountain").innerText = document.getElementById("pass-mountain").innerText;
+            document.getElementById("share-attitude").innerText = document.getElementById("pass-attitude").innerText;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Lager bilde …';
+
+            try {
+                // Sikre at det lokale passomslaget er ferdig dekodet før snapshot
+                const shareCover = document.getElementById("share-cover");
+                if (!shareCover.complete || shareCover.naturalWidth === 0) {
+                    await new Promise((res) => { shareCover.onload = res; setTimeout(res, 1500); });
+                }
+
+                const card = document.getElementById("share-card");
+                const canvas = await html2canvas(card, {
+                    backgroundColor: "#05070C", scale: 1, useCORS: true,
+                    allowTaint: false, imageTimeout: 8000, logging: false
+                });
+
+                const navnFil = (document.getElementById("pass-name").innerText || "borger")
+                    .replace(/[^a-zA-ZæøåÆØÅ0-9]+/g, "_");
+
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], `erkebergensk-pass-${navnFil}.png`, { type: "image/png" });
+
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: "Mitt erkebergenske pass",
+                                text: "Erkebergenser av Røsten & Leffe 🔴🟡 https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE"
+                            });
+                            status.innerText = "Delt! Spre den bergenske stoltheten 🔴";
+                            status.style.color = "#34D399";
+                        } catch (e) {
+                            if (!e || e.name !== "AbortError") lastNedFallback(canvas, navnFil, status);
+                        }
+                    } else {
+                        lastNedFallback(canvas, navnFil, status);
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtn;
+                    setTimeout(() => { status.innerText = ""; }, 4000);
+                }, "image/png");
+            } catch (err) {
+                console.error("Kunne ikke generere bilde:", err);
+                status.innerText = "Klarte ikke lage bilde – prøv en annen nettleser.";
+                status.style.color = "#F87171";
+                btn.disabled = false;
+                btn.innerHTML = originalBtn;
+                setTimeout(() => { status.innerText = ""; }, 4000);
+            }
+        }
+
+        function lastNedFallback(canvas, navnFil, status) {
+            const link = document.createElement("a");
+            link.download = `erkebergensk-pass-${navnFil}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+            status.innerText = "Passet er lastet ned! Klar for Instagram/Snap 📸";
+            status.style.color = "#34D399";
+        }
+
+        // ---------- Ordbok-knapper ----------
+        let activeGlose = null;
+        function translateGlose(word, btn) {
+            const output = document.getElementById("translation-output");
+            output.innerHTML = `<strong style="color: var(--gold);">${word}:</strong> ${gloser[word]}`;
+            if (activeGlose) activeGlose.classList.remove('is-active');
+            if (btn) { btn.classList.add('is-active'); activeGlose = btn; }
+        }
+        const dictGrid = document.getElementById("dictionary-grid");
+        Object.keys(gloser).forEach(glose => {
+            const btn = document.createElement("button");
+            btn.className = "dict-btn";
+            btn.innerHTML = `<span>${glose}</span> <i class="fa-solid fa-chevron-right text-[9px] opacity-50"></i>`;
+            btn.onclick = () => translateGlose(glose, btn);
+            dictGrid.appendChild(btn);
+        });
+
+        // ---------- SK Brann hype-meter (SVG gauge) ----------
+        // Map percentage 0..100 to needle rotation -75deg .. +75deg
+        function setGauge(pct) {
+            const arc = document.getElementById("gauge-arc");
+            const needle = document.getElementById("gauge-needle");
+            const total = 251;
+            const offset = total - (pct / 100) * total;
+            if (arc) arc.setAttribute("stroke-dashoffset", offset);
+            const rot = -75 + (pct / 100) * 150;
+            if (needle) needle.setAttribute("transform", `rotate(${rot} 100 110)`);
+        }
+        // Initial
+        setGauge(85);
+
+        function simulerBrann(resultat) {
+            const percentage = document.getElementById("hype-percentage");
+            const description = document.getElementById("hype-description");
+            const statTorg = document.getElementById("stat-torg");
+            const statSkeptisk = document.getElementById("stat-skeptisk");
+            const arc = document.getElementById("gauge-arc");
+
+            if (resultat === 'seier') {
+                setGauge(99);
+                percentage.innerText = "99,9 %";
+                percentage.style.color = "var(--green)";
+                if (arc) arc.style.stroke = "var(--green)";
+                description.innerText = "Totalt hysteri på Stadion! Noen hevder å ha sett statuen på Muren blunke. «Erkebergenser» ljomer utover Torgallmenningen på full guffe!";
+                statTorg.innerText = "Overfylt (24 000/kvm)";
+                statSkeptisk.innerText = "Ikke-eksisterende (0,0)";
+                playSnareSound(0.25);
+            } else {
+                setGauge(12);
+                percentage.innerText = "12 %";
+                percentage.style.color = "var(--red)";
+                if (arc) arc.style.stroke = "var(--red)";
+                description.innerText = "Dyp bergenserdepresjon. Vi skylder på dommeren fra Oslo. Bare en solid dose «Erkebergenser» på øret kan redde kvelden nå.";
+                statTorg.innerText = "Tomt (kun måser)";
+                statSkeptisk.innerText = "Ekstremt høy (9,8)";
+            }
+        }
+
+        // ---------- Buekorps-trommer ----------
+        let drumInterval = null;
+        function playDrumBeat(type) {
+            const indicator = document.getElementById("drum-indicator");
+            const label = document.getElementById("drum-beat-label");
+            if (drumInterval) clearInterval(drumInterval);
+
+            if (type === 'virvel') {
+                label.innerText = "VIRVLESALVE I GANG!";
+                let count = 0;
+                drumInterval = setInterval(() => {
+                    playSnareSound(0.08);
+                    indicator.style.transform = `scaleX(${Math.random() * 0.4 + 0.6})`;
+                    count++;
+                    if (count > 15) {
+                        clearInterval(drumInterval);
+                        indicator.style.transform = "scaleX(0)";
+                        label.innerText = "KLAR TIL Å BRÅKE IGJEN";
+                    }
+                }, 90);
+            } else if (type === 'takt') {
+                label.innerText = "PULSERENDE MARSJTAKT!";
+                let beat = 0;
+                const pattern = [0.15, 0.15, 0.3, 0.15, 0.15, 0.4];
+                function triggerNext() {
+                    if (beat >= pattern.length) {
+                        indicator.style.transform = "scaleX(0)";
+                        label.innerText = "NORDNES-MARSJ FULLFØRT";
+                        return;
+                    }
+                    playSnareSound(pattern[beat]);
+                    indicator.style.transform = `scaleX(${(beat + 1) / pattern.length})`;
+                    setTimeout(() => { beat++; triggerNext(); }, 250);
+                }
+                triggerNext();
+            }
+        }
+
+        // ---------- Live vær fra Open-Meteo ----------
+        async function fetchLiveWeather() {
+            const tempText = document.getElementById("live-temp");
+            const weatherIcon = document.getElementById("live-weather-icon");
+            try {
+                const url = "https://api.open-meteo.com/v1/forecast"
+                    + "?latitude=60.39&longitude=5.32"
+                    + "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code"
+                    + "&wind_speed_unit=ms&timezone=Europe%2FOslo";
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Open-Meteo svarte med feilstatus.");
+                const data = await response.json();
+                const c = data.current;
+                const temp = Math.round(c.temperature_2m * 10) / 10;
+                const humidity = c.relative_humidity_2m;
+                const wind = c.wind_speed_10m;
+                const code = c.weather_code;
+                const rainAmount = c.precipitation || 0;
+
+                tempText.innerText = `${String(temp).replace('.', ',')} °C · Bergen`;
+                document.getElementById("live-desc").innerText =
+                    `VIND ${String(wind).replace('.', ',')} M/S · FUKT ${humidity}%`;
+
+                let iconClass, intensity;
+                if ([0, 1].includes(code)) {
+                    iconClass = "fa-solid fa-sun text-xl";
+                    weatherIcon.style.color = "#E5B33A";
+                    intensity = 0;
+                } else if ([2, 3].includes(code)) {
+                    iconClass = "fa-solid fa-cloud text-xl";
+                    weatherIcon.style.color = "var(--text-2)";
+                    intensity = 15;
+                } else if ([45, 48].includes(code)) {
+                    iconClass = "fa-solid fa-smog text-xl";
+                    weatherIcon.style.color = "var(--text-2)";
+                    intensity = 10;
+                } else if (code >= 71 && code <= 77) {
+                    iconClass = "fa-solid fa-snowflake text-xl";
+                    weatherIcon.style.color = "#B6D9F2";
+                    intensity = 40;
+                } else if (code >= 95) {
+                    iconClass = "fa-solid fa-cloud-bolt text-xl";
+                    weatherIcon.style.color = "#E5B33A";
+                    intensity = 90;
+                } else {
+                    iconClass = "fa-solid fa-cloud-showers-heavy text-xl";
+                    weatherIcon.style.color = "var(--rain)";
+                    intensity = Math.min(100, Math.max(45, rainAmount * 25 + 45));
+                }
+                weatherIcon.className = iconClass;
+
+                document.getElementById("rain-slider").value = intensity;
+                setRainIntensity(intensity);
+            } catch (error) {
+                console.warn("Open-Meteo utilgjengelig.", error);
+                tempText.innerText = "11,5 °C · Bergen";
+                document.getElementById("live-desc").innerText = "VIND 6,2 M/S · FUKT 98%";
+                setRainIntensity(60);
+            }
+        }
+
+        // ---------- Regnsimulator ----------
+        function setRainIntensity(intensity) {
+            const container = document.getElementById("rain-container");
+            const label = document.getElementById("rain-label");
+            container.innerHTML = '';
+            // Cap drop count modestly — less visual noise
+            const dropCount = Math.floor(intensity * 1.1);
+
+            if (intensity == 0) {
+                label.innerText = "Mistenkelig solskinn";
+                label.className = "chip chip-warn";
+                return;
+            } else if (intensity < 30) {
+                label.innerText = "Vått yr";
+                label.className = "chip chip-rain";
+            } else if (intensity < 70) {
+                label.innerText = "Normalt Bergensøs";
+                label.className = "chip chip-rain";
+            } else {
+                label.innerText = "Ekstrembyge — låten på full guffe";
+                label.className = "chip chip-red";
+            }
+
+            for (let i = 0; i < dropCount; i++) {
+                const drop = document.createElement("div");
+                drop.className = "drop";
+                drop.style.left = `${Math.random() * 100}%`;
+                drop.style.animationDuration = `${0.6 + Math.random() * 0.7}s`;
+                drop.style.animationDelay = `${Math.random() * 2}s`;
+                drop.style.height = `${40 + Math.random() * 50}px`;
+                container.appendChild(drop);
+            }
+        }
+        document.getElementById("rain-slider").oninput = function () { setRainIntensity(this.value); };
+
+        // ---------- Chart.js ----------
+        let chartInstance = null;
+        const chartCaptions = {
+            rain: "Snittnedbør i Bergen per måned (mm). Spoiler: det regner alltid.",
+            hansa: "Ukentlig lykke-indeks. Hansa stiger jevnt mot helg; skepsisen mot Ringnes forblir lav.",
+            umbrella: "Antall paraplyer som ryker av vinden per uke, fordelt på beryktede vindkorridorer.",
+            streams: "Totale Spotify-strømminger siden lansering 14. mai 2026. Nå 6 713 — snitt +652 i døgnet, hver topp en ny bølge bergensk stolthet."
+        };
+        const chartData = {
+            rain: {
+                labels: ['Jan','Feb','Mar','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Des'],
+                datasets: [{
+                    label: 'Snittnedbør (mm)',
+                    data: [190,152,170,114,106,132,148,190,283,271,259,235],
+                    backgroundColor: 'rgba(227,27,35,0.08)', borderColor: '#E31B23',
+                    borderWidth: 2, tension: 0.35, fill: true, pointRadius: 2,
+                    pointBackgroundColor: '#E31B23', pointBorderWidth: 0
+                }]
+            },
+            hansa: {
+                labels: ['Man','Tir','Ons','Tor','Fre','Lør','Søn'],
+                datasets: [
+                    { label: 'Hansa Pilsner (lykke)', data: [50,55,70,85,140,200,110],
+                      borderColor: '#C9A455', borderWidth: 2, backgroundColor: 'rgba(201,164,85,0.08)', tension: 0.25, fill: true, pointRadius: 2, pointBackgroundColor: '#C9A455' },
+                    { label: 'Ringnes (skepsis)', data: [4,4,3,2,1,0.5,2],
+                      borderColor: '#475569', borderWidth: 1.5, borderDash: [4,4], fill: false, pointRadius: 0 }
+                ]
+            },
+            umbrella: {
+                labels: ['Smørsbroen','Fisketorget','Byparken','Torgallmenningen','Danmarksplass'],
+                datasets: [{
+                    label: 'Vindtatte paraplyer/uke',
+                    data: [420,310,580,750,490],
+                    backgroundColor: ['rgba(227,27,35,0.7)','rgba(201,164,85,0.7)','rgba(109,169,208,0.7)','rgba(29,185,84,0.7)','rgba(139,149,167,0.7)'],
+                    borderColor: 'transparent', borderWidth: 0, borderRadius: 4
+                }]
+            },
+            streams: {
+                labels: ['Lansering','+1 d','+2 d','+3 d','+4 d','+5 d','+6 d','+7 d','I dag'],
+                datasets: [{
+                    label: '«Erkebergenser» – Spotify-strømminger',
+                    data: [1180, 2050, 2900, 3550, 4100, 4750, 5400, 5990, 6713],
+                    backgroundColor: 'rgba(29,185,84,0.10)', borderColor: '#1DB954',
+                    borderWidth: 2, tension: 0.35, fill: true, pointRadius: 3, pointBackgroundColor: '#1DB954', pointBorderWidth: 0
+                }]
+            }
+        };
+
+        function switchChart(type) {
+            ['rain','hansa','umbrella','streams'].forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === type) btn.classList.add('is-active');
+                else btn.classList.remove('is-active');
+            });
+            document.getElementById("chart-caption").innerText = chartCaptions[type];
+            if (chartInstance) chartInstance.destroy();
+            renderChart(type);
+        }
+
+        function renderChart(type) {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: type === 'umbrella' ? 'bar' : 'line',
+                data: chartData[type],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#8B95A7', font: { family: 'JetBrains Mono', size: 10 }, boxWidth: 8, boxHeight: 8, usePointStyle: true }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0E131C',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            titleColor: '#ECEFF4',
+                            bodyColor: '#8B95A7',
+                            titleFont: { family: 'JetBrains Mono', size: 11 },
+                            bodyFont: { family: 'JetBrains Mono', size: 11 },
+                            padding: 10,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#5A6478', font: { family: 'JetBrains Mono', size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#5A6478', font: { family: 'JetBrains Mono', size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // ---------- Teller-animasjon ----------
+        function animateCounters() {
+            document.querySelectorAll('.counter').forEach(el => {
+                const target = parseFloat(el.dataset.target);
+                const decimal = el.dataset.decimal;
+                const duration = 1600;
+                const start = performance.now();
+                function tick(now) {
+                    const p = Math.min((now - start) / duration, 1);
+                    const eased = 1 - Math.pow(1 - p, 3);
+                    const val = Math.floor(eased * target);
+                    el.innerText = val.toLocaleString('nb-NO');
+                    if (p < 1) {
+                        requestAnimationFrame(tick);
+                    } else {
+                        el.innerText = decimal
+                            ? target.toLocaleString('nb-NO') + ',' + decimal
+                            : target.toLocaleString('nb-NO');
+                    }
+                }
+                requestAnimationFrame(tick);
+            });
+        }
+
+        // ---------- YouTube live-tall (via Netlify-proxy) ----------
+        // Henter ekte viewCount fra /api/youtube-stats. Proxyen holder
+        // API-nøkkelen skjult og cacher i 5 min på Netlify-CDN. Hvis kallet
+        // feiler (mangler nøkkel, offline, kvote sprengt) faller vi tilbake
+        // til siste kjente tall og merker kilden tydelig i UI.
+        async function fetchYouTubeStats() {
+            const el = document.getElementById('yt-viewcount');
+            const sourceEl = document.getElementById('yt-viewcount-source');
+            if (!el || !sourceEl) return;
+
+            try {
+                const r = await fetch(DATA_CONFIG.youtube.endpoint, { cache: 'no-store' });
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                const data = await r.json();
+                if (!data.ok || typeof data.viewCount !== 'number') {
+                    throw new Error(data.error || 'Uventet respons');
+                }
+                const views = data.viewCount;
+                const fetched = data.fetchedAt ? new Date(data.fetchedAt) : new Date();
+                updateCounterTo(el, views);
+                sourceEl.classList.remove('is-error', 'is-manual');
+                sourceEl.classList.add('is-live');
+                sourceEl.querySelector('span:last-child').innerHTML =
+                    'Live · YouTube Data API · cache 5 min · ' +
+                    fetched.toLocaleTimeString('nb-NO', { hour: '2-digit', minute: '2-digit' });
+            } catch (err) {
+                console.warn('YouTube-statistikk utilgjengelig:', err);
+                // Behold eksisterende tall (fallback / siste animerte verdi)
+                // og merk kilden tydelig som ikke-live.
+                sourceEl.classList.remove('is-live');
+                sourceEl.classList.add('is-error');
+                sourceEl.querySelector('span:last-child').innerHTML =
+                    'API utilgjengelig · viser sist kjente tall (' +
+                    DATA_CONFIG.youtube.fallbackViewCount.toLocaleString('nb-NO') + ')';
+            }
+        }
+
+        // Skriv en ny målverdi inn i en .counter og animer fra nåværende
+        // verdi til ny verdi. Brukes når data kommer asynkront etter at den
+        // første animateCounters() allerede har kjørt.
+        function updateCounterTo(el, newTarget) {
+            const current = parseFloat(String(el.innerText).replace(/[^\d.,-]/g, '').replace(',', '.')) || 0;
+            el.dataset.target = String(newTarget);
+            const duration = 900;
+            const start = performance.now();
+            const decimal = el.dataset.decimal;
+            function tick(now) {
+                const p = Math.min((now - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                const val = Math.floor(current + eased * (newTarget - current));
+                el.innerText = val.toLocaleString('nb-NO');
+                if (p < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    el.innerText = decimal
+                        ? newTarget.toLocaleString('nb-NO') + ',' + decimal
+                        : newTarget.toLocaleString('nb-NO');
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+
+        // Synk data-target på Spotify-cellene til DATA_CONFIG slik at
+        // counter-animasjonen aldri kommer i utakt med konfigurasjonen.
+        // Spotify-tallene er manuelt verifiserte — kilde-badgen viser dato.
+        function syncSpotifyTargets() {
+            const sp = DATA_CONFIG.spotify;
+            const streams = document.getElementById('sp-streams');
+            const pop = document.getElementById('sp-popularity');
+            if (streams) streams.dataset.target = String(sp.streams);
+            if (pop) pop.dataset.target = String(sp.popularity);
+            document.querySelectorAll('[data-verified-date]').forEach(n => {
+                n.textContent = sp.verifiedDate;
+            });
+        }
+
+        // ---------- Init ----------
+        window.onload = function () {
+            renderChart('rain');
+            oppdaterPass();
+            fetchLiveWeather();
+            syncSpotifyTargets();
+            animateCounters();
+            fetchYouTubeStats();
+            setInterval(fetchLiveWeather, 300000);
+            setInterval(fetchYouTubeStats, DATA_CONFIG.youtube.refreshMs);
+        };
+    </script>
+</body>
+</html>

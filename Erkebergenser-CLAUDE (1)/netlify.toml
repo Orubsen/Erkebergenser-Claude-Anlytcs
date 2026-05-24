@@ -1,0 +1,26 @@
+# netlify.toml — konfigurasjon for Erkebergenser
+# Statisk side + serverless proxy for YouTube Data API.
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Pen URL: /api/youtube-stats → /.netlify/functions/youtube-stats
+[[redirects]]
+  from = "/api/youtube-stats"
+  to = "/.netlify/functions/youtube-stats"
+  status = 200
+
+# Sørg for at forsiden alltid serveres
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# Fornuftige sikkerhets-headere
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

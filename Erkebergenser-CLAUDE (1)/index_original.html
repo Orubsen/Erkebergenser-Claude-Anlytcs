@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html lang="no" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erkebergenser Analytics — Røsten & Leffe</title>
+    <meta name="description" content="Republikken Bergens offisielle sanntids-dashbord for regn, Hansa-lykke og SK Brann-hype. Drevet av låten «Erkebergenser» av Røsten & Leffe.">
+    <meta name="author" content="Røsten & Leffe">
+    <meta name="theme-color" content="#E31B23">
+
+    <!-- Favicon (albumcover) -->
+    <link rel="icon" type="image/jpeg" href="https://i.scdn.co/image/ab67616d000048517810ead6ae130dcb6455e890">
+    <link rel="apple-touch-icon" href="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890">
+
+    <!-- ============ Open Graph (Facebook, Messenger, iMessage, WhatsApp, Discord, LinkedIn) ============ -->
+    <!-- TIPS: Bytt og:url til din egen Netlify-adresse etter publisering, f.eks. https://erkebergenser.netlify.app/ -->
+    <meta property="og:site_name" content="Republikken Bergen Analytics">
+    <meta property="og:title" content="Erkebergenser Analytics — Røsten & Leffe">
+    <meta property="og:description" content="Republikken Bergens offisielle sanntids-dashbord for regn, Hansa-lykke og SK Brann-hype. Hør «Erkebergenser» og lag ditt eget erkebergenske pass!">
+    <meta property="og:image" content="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890">
+    <meta property="og:image:width" content="640">
+    <meta property="og:image:height" content="640">
+    <meta property="og:image:alt" content="Røsten & Leffe – Erkebergenser albumcover">
+    <meta property="og:type" content="music.song">
+    <meta property="og:url" content="https://erkebergenser.netlify.app/">
+    <meta property="og:locale" content="nb_NO">
+    <meta property="music:musician" content="Røsten & Leffe">
+    <meta property="og:video" content="https://www.youtube.com/watch?v=EcWQlSrhZgA">
+
+    <!-- ============ Twitter / X Card ============ -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Erkebergenser Analytics — Røsten & Leffe">
+    <meta name="twitter:description" content="Sanntids-dashbord for bergensk regn, Hansa-lykke og SK Brann-hype. Hør «Erkebergenser» og lag ditt eget erkebergenske pass!">
+    <meta name="twitter:image" content="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890">
+    <meta name="twitter:image:alt" content="Røsten & Leffe – Erkebergenser albumcover">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for interaktive grafer -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2canvas for nedlastbart passbilde -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Font Awesome for bergenske ikoner -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Anton (display) + Outfit (body) + Space Grotesk (mono) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                        display: ['Anton', 'sans-serif'],
+                    },
+                    colors: {
+                        bergenRed: '#E31B23', // Ekte SK Brann brannrød
+                        hansaGold: '#D4AF37', // Hansapils-gull
+                        deepOcean: '#0B0F19', // Mørk nattehimmel over de syv fjell
+                        rainBlue: '#38BDF8',  // Regndråpe-blå
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #05070C;
+            color: #F1F5F9;
+            overflow-x: hidden;
+        }
+        /* Subtilt fjell-silhuett-bakteppe bak alt */
+        .mountain-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(1200px 600px at 50% -10%, rgba(227,27,35,0.10), transparent 70%),
+                radial-gradient(900px 500px at 85% 10%, rgba(212,175,55,0.06), transparent 70%);
+        }
+        /* Glassmorphism */
+        .glass {
+            background: rgba(13, 18, 30, 0.78);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-red {
+            background: rgba(227, 27, 35, 0.05);
+            border: 1px solid rgba(227, 27, 35, 0.18);
+        }
+        .glass-gold {
+            background: rgba(212, 175, 55, 0.04);
+            border: 1px solid rgba(212, 175, 55, 0.14);
+        }
+        /* Regn-animasjon */
+        .rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .drop {
+            position: absolute;
+            background: linear-gradient(transparent, rgba(56, 189, 248, 0.45));
+            width: 1.5px;
+            height: 80px;
+            opacity: 0.7;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-100px); }
+            100% { transform: translateY(100vh); }
+        }
+        /* Roterende vinyl-effekt til cover */
+        .spin-vinyl { animation: spin 6s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        /* Glødende effekter */
+        .neon-glow-red { box-shadow: 0 0 25px rgba(227, 27, 35, 0.22); }
+        .neon-glow-gold { box-shadow: 0 0 25px rgba(212, 175, 55, 0.15); }
+        /* Pyro-flammeflimmer på hero-tittel */
+        @keyframes flicker {
+            0%, 100% { opacity: 1; text-shadow: 0 0 18px rgba(227,27,35,0.55), 0 0 40px rgba(212,175,55,0.25); }
+            50% { opacity: 0.94; text-shadow: 0 0 26px rgba(227,27,35,0.75), 0 0 60px rgba(212,175,55,0.35); }
+        }
+        .pyro-text { animation: flicker 2.4s ease-in-out infinite; }
+        /* Staggered innlasting */
+        @keyframes riseIn {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .rise { opacity: 0; animation: riseIn 0.7s cubic-bezier(0.22,1,0.36,1) forwards; }
+        /* Marquee for laufeband */
+        .marquee-track {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 28s linear infinite;
+        }
+        @keyframes marquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+        /* Custom range-thumb */
+        input[type="range"].accent-bergenRed::-webkit-slider-thumb { cursor: pointer; }
+        /* Skjuler scrollbar pent på laufeband */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+
+    <script>
+        // Feilhåndtering for bilder: faller tilbake til offisielt Spotify-cover om hovedkilden svikter.
+        function handleImageError(img, type) {
+            console.warn("Bilde feilet — bytter til offisielt Spotify-cover.");
+            if (type === 'pass') {
+                img.src = "https://i.scdn.co/image/ab67616d00001e027810ead6ae130dcb6455e890";
+            } else {
+                img.src = "https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890";
+            }
+            img.onerror = null;
+        }
+    </script>
+</head>
+<body class="font-sans antialiased relative min-h-screen">
+
+    <!-- Atmosfærisk bakteppe + animert Bergensregn -->
+    <div class="mountain-bg"></div>
+    <div id="rain-container" class="rain"></div>
+
+    <!-- LAUFEBAND: rullende patriot-tekst på toppen -->
+    <div class="relative z-20 bg-bergenRed/90 text-white overflow-hidden border-b border-black/30">
+        <div class="marquee-track py-1.5 text-[11px] font-black uppercase tracking-[0.2em]">
+            <span class="px-6">🔥 Røsten &amp; Leffe — «Erkebergenser» ute nå</span>
+            <span class="px-6">⚽ Gullet ska hem</span>
+            <span class="px-6">📈 6 675 strømminger og stigende</span>
+            <span class="px-6">🍺 Hansa kald, hjertet rødt</span>
+            <span class="px-6">🎶 Spill den på maks volum</span>
+            <span class="px-6">🔥 Røsten &amp; Leffe — «Erkebergenser» ute nå</span>
+            <span class="px-6">⚽ Gullet ska hem</span>
+            <span class="px-6">📈 6 675 strømminger og stigende</span>
+            <span class="px-6">🍺 Hansa kald, hjertet rødt</span>
+            <span class="px-6">🎶 Spill den på maks volum</span>
+        </div>
+    </div>
+
+    <!-- Hovedinnhold -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+        <!-- ============ HERO: «Erkebergenser» låtlansering ============ -->
+        <section class="rise relative rounded-[2rem] overflow-hidden mb-10 border border-bergenRed/25 neon-glow-red"
+                 style="animation-delay: 0.05s">
+            <!-- Coverbilde som fullbredde-bakgrunn -->
+            <div class="absolute inset-0">
+                <img id="hero-bg"
+                     src="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890"
+                     alt="Røsten & Leffe – Erkebergenser albumcover"
+                     class="w-full h-full object-cover object-center scale-105"
+                     onerror="handleImageError(this, 'cover')">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#05070C] via-[#05070C]/85 to-[#05070C]/30"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#05070C] via-transparent to-transparent"></div>
+            </div>
+
+            <div class="relative z-10 p-7 sm:p-10 lg:p-14 flex flex-col lg:flex-row items-start lg:items-end justify-between gap-8">
+                <div class="max-w-2xl">
+                    <span class="bg-bergenRed text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-full tracking-[0.2em] inline-flex items-center gap-2 mb-5 shadow-lg shadow-bergenRed/30">
+                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                        Ny singel · 2026
+                    </span>
+                    <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.92] text-white pyro-text">
+                        RØSTEN &amp; LEFFE
+                    </h1>
+                    <p class="font-display text-3xl sm:text-4xl text-hansaGold mt-1 tracking-wide">«ERKEBERGENSER»</p>
+                    <p class="text-slate-300 text-sm sm:text-base mt-4 leading-relaxed max-w-xl">
+                        Republikken Bergens offisielle nasjonalsang. Tårevåt nostalgi møter hissig Brann-entusiasme,
+                        bygget for allsang i øsende regn. Hør den under — og la dashbordet bak vise hva låten gjør med byen.
+                    </p>
+
+                    <div class="flex flex-wrap gap-3 mt-7">
+                        <a href="https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE"
+                           target="_blank" rel="noopener"
+                           class="bg-[#1DB954] hover:bg-[#1ed760] text-black font-extrabold px-6 py-3 rounded-2xl text-sm uppercase tracking-wider transition duration-300 flex items-center gap-2.5 shadow-lg shadow-green-500/20 active:scale-95">
+                            <i class="fa-brands fa-spotify text-xl"></i>
+                            Spill på Spotify
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=EcWQlSrhZgA"
+                           target="_blank" rel="noopener"
+                           class="bg-bergenRed hover:bg-red-500 text-white font-extrabold px-6 py-3 rounded-2xl text-sm uppercase tracking-wider transition duration-300 flex items-center gap-2.5 shadow-lg shadow-bergenRed/20 active:scale-95">
+                            <i class="fa-brands fa-youtube text-xl"></i>
+                            Se på YouTube
+                        </a>
+                        <a href="#spilleren"
+                           class="glass text-white font-bold px-6 py-3 rounded-2xl text-sm uppercase tracking-wider transition duration-300 flex items-center gap-2.5 hover:border-bergenRed/40 active:scale-95">
+                            <i class="fa-solid fa-headphones text-bergenRed"></i>
+                            Hør i nettleseren
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Roterende vinyl-cover -->
+                <div class="hidden sm:flex flex-col items-center flex-shrink-0">
+                    <div class="relative w-40 h-40 lg:w-48 lg:h-48 rounded-full bg-black border-[6px] border-neutral-900 shadow-2xl flex items-center justify-center overflow-hidden">
+                        <div class="spin-vinyl w-full h-full flex items-center justify-center">
+                            <img src="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890"
+                                 alt="Erkebergenser cover"
+                                 class="w-24 h-24 lg:w-28 lg:h-28 rounded-full object-cover border-2 border-black">
+                        </div>
+                        <div class="absolute w-4 h-4 bg-[#05070C] rounded-full border border-neutral-700"></div>
+                    </div>
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-slate-400 mt-3 font-mono">Spinner non-stop</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tittel & Live værsenter -->
+        <header class="rise flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 pb-6 border-b border-slate-800 gap-6" style="animation-delay: 0.15s">
+            <div>
+                <h2 class="text-3xl font-black tracking-tight bg-gradient-to-r from-white via-slate-200 to-bergenRed bg-clip-text text-transparent">
+                    Erkebergenser Analytics
+                    <span class="text-xs font-semibold text-bergenRed px-2.5 py-0.5 bg-bergenRed/10 rounded-full border border-bergenRed/20 ml-2 align-middle">v4.0 PRO</span>
+                </h2>
+                <p class="text-slate-400 text-sm mt-1">Ekte meteorologisk overvåking, buekorps-simulering og lokal sjelemåling.</p>
+            </div>
+
+            <!-- Live værdata via Open-Meteo -->
+            <div id="live-met-widget" class="glass px-5 py-4 rounded-3xl flex items-center gap-4 border border-blue-500/20 shadow-lg shadow-blue-500/5 max-w-full">
+                <div class="bg-blue-500/10 p-2.5 rounded-2xl border border-blue-500/30">
+                    <i id="live-weather-icon" class="fa-solid fa-cloud-showers-heavy text-2xl text-blue-400 animate-pulse"></i>
+                </div>
+                <div class="text-left">
+                    <span class="text-[9px] uppercase tracking-widest text-slate-400 font-bold block">Live vær · Open-Meteo</span>
+                    <span id="live-temp" class="text-white font-extrabold text-lg block">Laster inn …</span>
+                    <span id="live-desc" class="text-slate-400 text-xs">Værdata hentes fra Vågen</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- ============ EKTE SPOTIFY-SPILLER (snikreklamens hjerte) ============ -->
+        <section id="spilleren" class="rise glass glass-red p-6 sm:p-7 rounded-3xl mb-8 border border-bergenRed/20 neon-glow-red" style="animation-delay: 0.22s">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-5">
+                <div class="text-center sm:text-left">
+                    <span class="text-[9px] uppercase tracking-[0.25em] text-bergenRed font-black block">Direkte fra Spotify</span>
+                    <h3 class="text-xl font-black text-white">Hør «Erkebergenser» her og nå</h3>
+                    <p class="text-xs text-slate-400 mt-1">Ekte avspilling — ingen grunn til å forlate Republikken.</p>
+                </div>
+                <span class="text-[10px] font-mono text-slate-500 bg-slate-900/60 px-3 py-1.5 rounded-full border border-slate-800 whitespace-nowrap">
+                    <i class="fa-solid fa-circle text-green-500 text-[7px] mr-1.5 align-middle"></i> Offisiell strøm
+                </span>
+            </div>
+            <!-- Spotify offisiell embed -->
+            <iframe style="border-radius:16px"
+                    src="https://open.spotify.com/embed/track/2JffeDCp1T5vQdQXrqKCnE"
+                    width="100%" height="152" frameborder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    title="Spotify: Erkebergenser av Røsten & Leffe"></iframe>
+        </section>
+
+        <!-- ============ EKTE RELEASE-STATISTIKK ============ -->
+        <section class="rise mb-8" style="animation-delay: 0.26s">
+            <div class="flex items-end justify-between mb-4 px-1">
+                <div>
+                    <h3 class="text-lg font-black text-white flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        Live release-statistikk
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Ekte tall fra lanseringen — utgitt 14. mai 2026 · ISRC NOPOU2600001</p>
+                </div>
+                <span class="hidden sm:inline-block text-[10px] font-mono text-slate-500">oppdatert i sanntid</span>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Spotify-strømminger -->
+                <div class="glass p-5 rounded-3xl border border-green-500/20 relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-green-500/10 rounded-full blur-2xl"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-brands fa-spotify text-[#1DB954] text-lg"></i>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Spotify-strømminger</span>
+                    </div>
+                    <div class="counter text-3xl font-black text-white" data-target="6675">0</div>
+                    <div class="text-[11px] text-green-400 font-bold mt-1">+652 / dag i snitt</div>
+                </div>
+
+                <!-- Popularitet -->
+                <div class="glass p-5 rounded-3xl border border-green-500/15 relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-green-500/5 rounded-full blur-2xl"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-fire text-green-400 text-lg"></i>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Spotify-popularitet</span>
+                    </div>
+                    <div class="text-3xl font-black text-white"><span class="counter" data-target="27">0</span> %</div>
+                    <div class="text-[11px] text-slate-400 font-bold mt-1">og stigende, jaggu</div>
+                </div>
+
+                <!-- YouTube-avspillinger -->
+                <div class="glass p-5 rounded-3xl border border-bergenRed/20 relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-bergenRed/10 rounded-full blur-2xl"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-brands fa-youtube text-bergenRed text-lg"></i>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">YouTube-avspillinger</span>
+                    </div>
+                    <div class="counter text-3xl font-black text-white" data-target="1213">0</div>
+                    <div class="text-[11px] text-bergenRed font-bold mt-1">55,2 % ser hele videoen</div>
+                </div>
+
+                <!-- Seertid -->
+                <div class="glass p-5 rounded-3xl border border-amber-500/15 relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl"></div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-clock text-amber-400 text-lg"></i>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Samlet seertid</span>
+                    </div>
+                    <div class="text-3xl font-black text-white"><span class="counter" data-target="39" data-decimal="5">0</span> t</div>
+                    <div class="text-[11px] text-amber-400 font-bold mt-1">timer med ren stolthet</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ Dashbord-gitter ============ -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+            <!-- VENSTRE SPALTE (5 kol): Pass, Ordbok -->
+            <div class="lg:col-span-5 space-y-6">
+
+                <!-- Det Erkebergenske Passet -->
+                <div class="rise glass p-6 rounded-3xl border border-amber-500/15 shadow-xl relative overflow-hidden neon-glow-gold" style="animation-delay: 0.3s">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl"></div>
+
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-amber-400">
+                        <i class="fa-solid fa-passport text-amber-500"></i>
+                        Det erkebergenske passet
+                    </h2>
+
+                    <!-- Interaktivt pass-kort -->
+                    <div class="relative rounded-3xl bg-slate-950 border border-amber-500/30 p-5 shadow-2xl mb-6 overflow-hidden h-64 flex flex-col justify-between">
+                        <div class="absolute inset-0 opacity-20 pointer-events-none">
+                            <img id="pass-bg"
+                                 src="https://i.scdn.co/image/ab67616d00001e027810ead6ae130dcb6455e890"
+                                 alt="Erkebergensk pass-vannmerke"
+                                 class="w-full h-full object-cover filter contrast-110 brightness-90 sepia"
+                                 onerror="handleImageError(this, 'pass')">
+                        </div>
+
+                        <div class="relative z-10 flex flex-col justify-between h-full">
+                            <div class="flex justify-between items-start">
+                                <div class="text-left">
+                                    <span class="text-[8px] uppercase tracking-widest text-amber-500 font-black block">Republikken Bergen</span>
+                                    <span class="text-xs font-black text-white uppercase tracking-wider font-mono">Erkebergensk pass</span>
+                                </div>
+                                <div class="bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded text-[8px] font-mono border border-amber-500/30">
+                                    REGN-98-R&amp;L
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4 my-2">
+                                <div class="w-16 h-20 rounded-xl border border-amber-500/40 bg-black/50 overflow-hidden flex items-center justify-center relative flex-shrink-0">
+                                    <svg class="w-10 h-10 text-amber-500/40" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                    </svg>
+                                    <span class="absolute bottom-0 inset-x-0 bg-amber-500/30 text-[7px] text-center font-bold text-amber-100 py-0.5 font-mono uppercase">Kjuagutt</span>
+                                </div>
+
+                                <div class="text-left space-y-1 font-mono text-[9px] text-amber-200">
+                                    <div><span class="text-amber-500/70 text-[8px] uppercase block">Borgernavn:</span> <span id="pass-name" class="font-black text-white text-[11px]">Leffe Johannessen</span></div>
+                                    <div><span class="text-amber-500/70 text-[8px] uppercase block">Fødested:</span> <span id="pass-birth">Kvinneklinikken (KK)</span></div>
+                                    <div><span class="text-amber-500/70 text-[8px] uppercase block">Foretrukket fjell:</span> <span id="pass-mountain">Ulriken (643 m)</span></div>
+                                    <div><span class="text-amber-500/70 text-[8px] uppercase block">Holdning:</span> <span id="pass-attitude">Beliter seg ALDRI!</span></div>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-end border-t border-amber-500/20 pt-2 text-[8px] text-amber-500/70 font-mono">
+                                <div>Status: <span class="text-amber-200">Godkjent patriot</span></div>
+                                <div class="text-right">Signatur: <span class="text-amber-200 italic font-serif">Røsten &amp; Leffe</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pass-skjema -->
+                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-800 space-y-3">
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1">Ditt navn</label>
+                            <input id="input-name" type="text" value="Leffe Johannessen"
+                                   class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs focus:border-amber-500 focus:outline-none text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Fødested</label>
+                                <select id="input-birth" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs focus:border-amber-500 focus:outline-none text-white">
+                                    <option value="Kvinneklinikken (KK)">Kvinneklinikken (KK)</option>
+                                    <option value="Haukeland Sykehus">Haukeland Sykehus</option>
+                                    <option value="Ombord i en Hansa-skøyte">Hansa-skøyte</option>
+                                    <option value="Eksil på Østlandet">Eksil (skeptisk)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Hovedfjell</label>
+                                <select id="input-mountain" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs focus:border-amber-500 focus:outline-none text-white">
+                                    <option value="Ulriken (643 m)">Ulriken</option>
+                                    <option value="Fløyen (400 m)">Fløyen</option>
+                                    <option value="Løvstakken (477 m)">Løvstakken</option>
+                                    <option value="Sandviksfjellet">Sandviksfjellet</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input id="input-belite" type="checkbox" checked class="rounded text-amber-500 focus:ring-0 accent-amber-500">
+                            <label for="input-belite" class="text-[10px] text-slate-300">Nekter å «belite» meg ved enhver diskusjon.</label>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <button onclick="oppdaterPass()" class="bg-amber-600 hover:bg-amber-500 text-white font-extrabold py-2.5 rounded-xl text-xs uppercase tracking-wider transition active:scale-95">
+                                Oppdater billetten
+                            </button>
+                            <button onclick="delPass()" class="bg-bergenRed hover:bg-red-500 text-white font-extrabold py-2.5 rounded-xl text-xs uppercase tracking-wider transition active:scale-95 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-share-nodes"></i> Del passet
+                            </button>
+                        </div>
+                        <button onclick="lastNedPass()" id="download-btn" class="w-full bg-gradient-to-r from-amber-500 to-bergenRed hover:opacity-90 text-white font-extrabold py-2.5 rounded-xl text-xs uppercase tracking-wider transition active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Last ned som bilde (Instagram/Snap)
+                        </button>
+                        <p id="del-status" class="text-[10px] text-center text-amber-400 h-3 transition"></p>
+                    </div>
+                </div>
+
+                <!-- Strila-Oversetteren -->
+                <div class="rise glass p-6 rounded-3xl border border-slate-800" style="animation-delay: 0.38s">
+                    <h3 class="text-lg font-bold mb-3 flex items-center gap-2 text-slate-100">
+                        <i class="fa-solid fa-language text-bergenRed"></i>
+                        Strila-Oversetteren
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-4">
+                        Forstå bergenske gloser før du begir deg inn på smitt og smau:
+                    </p>
+                    <div class="grid grid-cols-2 gap-2" id="dictionary-grid"></div>
+                    <div class="mt-4 p-3 bg-slate-950/60 rounded-2xl border border-slate-800 text-xs min-h-[60px] flex flex-col justify-center">
+                        <span class="text-[9px] uppercase tracking-wider text-bergenRed font-bold">Betydning:</span>
+                        <p id="translation-output" class="text-slate-200 mt-1 italic">Klikk på en av de erkebergenske glosene over …</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- HØYRE SPALTE (7 kol): Karaoke, SK Brann, Regn, Grafer -->
+            <div class="lg:col-span-7 space-y-6">
+
+                <!-- KARAOKE / ALLSANGSPILLER -->
+                <div class="rise glass p-6 rounded-3xl border border-bergenRed/20 relative overflow-hidden neon-glow-red" style="animation-delay: 0.3s">
+                    <div class="absolute -right-32 -bottom-32 w-96 h-96 bg-bergenRed/5 rounded-full blur-3xl"></div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                        <div class="text-center sm:text-left">
+                            <span class="text-[9px] uppercase tracking-widest text-bergenRed font-black block">Patriot-allsang</span>
+                            <h3 class="text-xl font-black text-white">«Erkebergenser» — syng med</h3>
+                        </div>
+                        <a href="https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE"
+                           target="_blank" rel="noopener"
+                           class="bg-[#1DB954] hover:bg-[#1ed760] text-black font-extrabold px-4 py-1.5 rounded-full text-[10px] uppercase tracking-wider transition flex items-center gap-1.5 shadow-md">
+                            <i class="fa-brands fa-spotify"></i> Åpne i Spotify
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        <!-- Interaktiv vinyl -->
+                        <div class="md:col-span-4 flex flex-col items-center">
+                            <div class="relative w-32 h-32 rounded-full bg-neutral-900 border-4 border-neutral-800 flex items-center justify-center shadow-2xl overflow-hidden">
+                                <img id="vinyl-art"
+                                     src="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890"
+                                     alt="Vinyl-cover"
+                                     class="w-16 h-16 rounded-full object-cover border border-black"
+                                     onerror="handleImageError(this, 'cover')">
+                                <div class="absolute w-3 h-3 bg-slate-950 rounded-full border border-neutral-700"></div>
+                            </div>
+                            <div class="flex gap-4 mt-4">
+                                <button onclick="toggleKaraoke()" id="play-btn" class="w-10 h-10 rounded-full bg-bergenRed hover:bg-red-500 text-white flex items-center justify-center transition focus:outline-none shadow-lg active:scale-90">
+                                    <i id="play-icon" class="fa-solid fa-play"></i>
+                                </button>
+                                <button onclick="resetKaraoke()" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition active:scale-90">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Karaoke-skjerm -->
+                        <div class="md:col-span-8 space-y-3">
+                            <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 h-36 flex flex-col justify-between relative overflow-hidden">
+                                <div class="text-[9px] font-mono text-slate-500 uppercase tracking-widest">Syng med (uoffisiell allsangtekst):</div>
+                                <div class="text-center my-auto px-2">
+                                    <p id="karaoke-line-1" class="text-sm font-extrabold text-white transition duration-300">Solen skinne over alle de syv fjell …</p>
+                                    <p id="karaoke-line-2" class="text-xs font-semibold text-slate-400 mt-1 transition duration-300">(Men vi foretrekker regnet!)</p>
+                                </div>
+                                <div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+                                    <div id="karaoke-progress" class="bg-bergenRed h-full w-0 transition-all duration-300"></div>
+                                </div>
+                            </div>
+
+                            <!-- Buekorps-trommer -->
+                            <div class="bg-slate-950/60 p-3 rounded-2xl border border-slate-800">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span id="drum-beat-label" class="text-[9px] font-mono uppercase tracking-widest text-amber-400">Klar til å bråke</span>
+                                    <div class="flex gap-2">
+                                        <button onclick="playDrumBeat('takt')" class="text-[10px] font-bold bg-amber-600/20 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-lg hover:bg-amber-600/30 transition">
+                                            <i class="fa-solid fa-drum"></i> Marsjtakt
+                                        </button>
+                                        <button onclick="playDrumBeat('virvel')" class="text-[10px] font-bold bg-bergenRed/20 text-bergenRed border border-bergenRed/30 px-2.5 py-1 rounded-lg hover:bg-bergenRed/30 transition">
+                                            <i class="fa-solid fa-bolt"></i> Virvel
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                                    <div id="drum-indicator" class="bg-gradient-to-r from-amber-400 to-bergenRed h-full origin-left transition-transform duration-100" style="width:100%; transform: scaleX(0);"></div>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-slate-400 text-center italic">Trykk på play for å starte allsangen med ekte buekorps-trommer (slå på lyden!).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SK Brann realitetsindeks -->
+                <div class="rise glass p-6 rounded-3xl relative overflow-hidden border border-bergenRed/10" style="animation-delay: 0.38s">
+                    <div class="absolute -right-16 -top-16 w-48 h-48 bg-bergenRed/5 rounded-full blur-3xl"></div>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                        <div>
+                            <h2 class="text-xl font-bold flex items-center gap-2 text-white">
+                                <span class="w-2.5 h-2.5 rounded-full bg-bergenRed animate-ping"></span>
+                                SK Brann Realitets-Indeks (sanntid)
+                            </h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Måler troen på at «Gullet ska hem» og låtens avspillingstall.</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="simulerBrann('tap')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-3 py-1.5 rounded-xl text-xs transition active:scale-95">
+                                Simuler tap (sorg)
+                            </button>
+                            <button onclick="simulerBrann('seier')" class="bg-bergenRed hover:bg-red-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs transition shadow-lg shadow-bergenRed/10 active:scale-95">
+                                Simuler seier (gullfest!)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                        <!-- Speedometer -->
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-40 h-24 overflow-hidden flex items-end justify-center">
+                                <div class="absolute inset-0 border-b-0 border-[10px] border-slate-800 rounded-t-full"></div>
+                                <div id="hype-needle" class="absolute bottom-0 w-1.5 h-16 bg-white rounded-full transition-transform duration-700 shadow" style="transform: rotate(30deg); transform-origin: 50% 100%;"></div>
+                                <div class="absolute bottom-0 w-4 h-4 bg-white rounded-full z-10"></div>
+                            </div>
+                            <span class="text-[10px] text-slate-400 mt-2 font-mono">GULLET SKA HEM-INDEKS</span>
+                            <span id="hype-percentage" class="text-lg font-black text-bergenRed">85 %</span>
+                        </div>
+
+                        <!-- Stat-tekster -->
+                        <div class="md:col-span-2 space-y-3">
+                            <div class="p-4 bg-slate-950/80 rounded-2xl border border-slate-800">
+                                <span class="text-[9px] uppercase tracking-wider text-bergenRed font-black">Anthem-hype:</span>
+                                <p id="hype-description" class="text-sm font-semibold text-slate-100 mt-1">Borgerskapet har satt Røsten &amp; Leffe på repetisjon. Allsang i buekorpsrekkene meldes fra hele byen!</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <div class="p-2.5 bg-slate-900/40 rounded-xl">
+                                    <span class="text-slate-400 block text-[10px]">Torgallmenningen-hype</span>
+                                    <span id="stat-torg" class="font-bold text-slate-200">12 500 pers/kvm</span>
+                                </div>
+                                <div class="p-2.5 bg-slate-900/40 rounded-xl">
+                                    <span class="text-slate-400 block text-[10px]">Strilsk skepsis-faktor</span>
+                                    <span id="stat-skeptisk" class="font-bold text-slate-200">Kritisk lav (0,2)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Regnsimulator -->
+                <div class="rise glass p-6 rounded-3xl border border-slate-800" style="animation-delay: 0.46s">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-blue-400"></i>
+                            Regnsimulator &amp; vær-overstyring
+                        </h3>
+                        <span id="rain-label" class="bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-bold px-3 py-1 rounded-full">
+                            Normalt Bergensøs
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                        Når live-været fra Open-Meteo blir for kjedelig, kan du manuelt skru opp til apokalyptiske tilstander. Bakgrunnsregnet reagerer umiddelbart!
+                    </p>
+                    <input id="rain-slider" type="range" min="0" max="100" value="60"
+                           class="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-bergenRed">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-2">
+                        <span>SOLSKINN (MISTENKELIG)</span>
+                        <span>NORMAL BYGE</span>
+                        <span>EKSTREMVÆR «JAKOB»</span>
+                    </div>
+                </div>
+
+                <!-- Analytics-grafer -->
+                <div class="rise glass p-6 rounded-3xl border border-slate-800" style="animation-delay: 0.54s">
+                    <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-blue-400"></i>
+                        Bergenske sannhets-grafer
+                    </h2>
+                    <div class="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-3">
+                        <button id="tab-btn-rain" onclick="switchChart('rain')" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-bergenRed/10 text-bergenRed border border-bergenRed/20 transition">
+                            Regnbyger
+                        </button>
+                        <button id="tab-btn-hansa" onclick="switchChart('hansa')" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 hover:bg-slate-800 transition">
+                            Hansa vs. Ringnes
+                        </button>
+                        <button id="tab-btn-umbrella" onclick="switchChart('umbrella')" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 hover:bg-slate-800 transition">
+                            Paraply-forbruk
+                        </button>
+                        <button id="tab-btn-streams" onclick="switchChart('streams')" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 hover:bg-slate-800 transition">
+                            «Erkebergenser»-strømming
+                        </button>
+                    </div>
+                    <div class="h-72 w-full relative">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                    <p id="chart-caption" class="text-[11px] text-slate-500 italic mt-3 text-center">Snittnedbør i Bergen per måned (mm). Spoiler: det regner alltid.</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ============ Avsluttende CTA-banner ============ -->
+        <section class="rise relative rounded-3xl overflow-hidden mt-10 border border-bergenRed/25 neon-glow-red" style="animation-delay: 0.6s">
+            <div class="absolute inset-0 bg-gradient-to-r from-bergenRed/20 via-slate-950 to-amber-600/10"></div>
+            <div class="relative z-10 p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+                <div>
+                    <h3 class="font-display text-3xl sm:text-4xl text-white tracking-wide">GULLET SKA HEM</h3>
+                    <p class="text-slate-300 text-sm mt-2 max-w-xl">
+                        Hver eneste avspilling av «Erkebergenser» løfter byens kollektive humør med målbare prosenter.
+                        Gjør din borgerplikt — sett den på repeat.
+                    </p>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+                    <a href="https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE"
+                       target="_blank" rel="noopener"
+                       class="bg-[#1DB954] hover:bg-[#1ed760] text-black font-extrabold px-7 py-3.5 rounded-2xl text-sm uppercase tracking-wider transition duration-300 flex items-center justify-center gap-2.5 shadow-lg shadow-green-500/20 active:scale-95">
+                        <i class="fa-brands fa-spotify text-xl"></i>
+                        Spill nå
+                    </a>
+                    <a href="https://www.youtube.com/watch?v=EcWQlSrhZgA"
+                       target="_blank" rel="noopener"
+                       class="bg-bergenRed hover:bg-red-500 text-white font-extrabold px-7 py-3.5 rounded-2xl text-sm uppercase tracking-wider transition duration-300 flex items-center justify-center gap-2.5 shadow-lg shadow-bergenRed/20 active:scale-95">
+                        <i class="fa-brands fa-youtube text-xl"></i>
+                        Se videoen
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="mt-14 pt-8 border-t border-slate-800 text-center text-xs text-slate-500 space-y-3 pb-8">
+            <p>© 2026 Republikken Bergen Analytics. Utgitt i nært samarbeid med Røsten &amp; Leffe.</p>
+            <p class="text-slate-600">«Erkebergenser» av Ruben Røsten &amp; Leffe Johannessen · Røsten Ent. · distribuert av TuneCore · utgitt 14. mai 2026.</p>
+            <p class="text-slate-600">All data er korrigert for bergensk overlegenhet. Strømmetall er ekte; resten er kjærlig satire. Hver avspilling bidrar (angivelig) direkte til økt lykke, Hansa-konsum og seriegull.</p>
+        </footer>
+    </div>
+
+    <!-- ============ SKJULT DELKORT (rendres til bilde for Instagram/Snap) ============ -->
+    <!-- Plassert utenfor synlig flyt; 1080x1350 portrett -->
+    <div id="share-card-wrapper" style="position: fixed; left: -9999px; top: 0; pointer-events: none;">
+        <div id="share-card" style="width: 1080px; height: 1350px; position: relative; overflow: hidden;
+                    background: linear-gradient(160deg, #1a0608 0%, #05070C 55%, #0a0d14 100%);
+                    font-family: 'Outfit', sans-serif; color: #F1F5F9;">
+
+            <!-- Cover som atmosfærisk topp -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 560px; overflow: hidden;">
+                <img id="share-cover" crossorigin="anonymous"
+                     src="https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890"
+                     style="width: 100%; height: 100%; object-fit: cover; object-position: center;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,7,12,0.15) 0%, rgba(5,7,12,0.6) 60%, #05070C 100%);"></div>
+            </div>
+
+            <!-- Republikk-bånd -->
+            <div style="position: absolute; top: 56px; left: 56px; right: 56px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="background: #E31B23; color: #fff; font-weight: 900; font-size: 22px; letter-spacing: 4px; text-transform: uppercase; padding: 10px 22px; border-radius: 999px;">
+                    Republikken Bergen
+                </div>
+                <div style="background: rgba(212,175,55,0.2); color: #D4AF37; border: 2px solid rgba(212,175,55,0.5); font-family: 'Space Grotesk', monospace; font-size: 18px; padding: 8px 16px; border-radius: 10px;">
+                    REGN-98-R&amp;L
+                </div>
+            </div>
+
+            <!-- Tittel -->
+            <div style="position: absolute; top: 470px; left: 56px; right: 56px;">
+                <div style="font-family: 'Anton', sans-serif; font-size: 84px; line-height: 0.9; color: #fff; text-shadow: 0 0 30px rgba(227,27,35,0.5);">
+                    ERKEBERGENSK
+                </div>
+                <div style="font-family: 'Anton', sans-serif; font-size: 84px; line-height: 0.9; color: #D4AF37;">
+                    PASS
+                </div>
+            </div>
+
+            <!-- Borgerkort -->
+            <div style="position: absolute; top: 690px; left: 56px; right: 56px; bottom: 230px;
+                        background: rgba(13,18,30,0.85); border: 2px solid rgba(212,175,55,0.3);
+                        border-radius: 32px; padding: 44px 48px;">
+                <div style="display: flex; gap: 36px; align-items: flex-start;">
+                    <!-- Profil-rute -->
+                    <div style="width: 150px; height: 190px; border-radius: 20px; border: 2px solid rgba(212,175,55,0.5);
+                                background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative; overflow: hidden;">
+                        <svg width="90" height="90" viewBox="0 0 24 24" fill="rgba(212,175,55,0.45)">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(212,175,55,0.3); color: #fde68a; font-size: 15px; font-weight: 700; text-align: center; padding: 6px 0; font-family: 'Space Grotesk', monospace; text-transform: uppercase;">Kjuagutt</span>
+                    </div>
+                    <!-- Detaljer -->
+                    <div style="flex: 1; font-family: 'Space Grotesk', monospace;">
+                        <div style="margin-bottom: 20px;">
+                            <div style="color: rgba(212,175,55,0.7); font-size: 16px; text-transform: uppercase; letter-spacing: 2px;">Borgernavn</div>
+                            <div id="share-name" style="color: #fff; font-size: 38px; font-weight: 700;">Leffe Johannessen</div>
+                        </div>
+                        <div style="display: flex; gap: 40px; margin-bottom: 20px;">
+                            <div>
+                                <div style="color: rgba(212,175,55,0.7); font-size: 15px; text-transform: uppercase; letter-spacing: 2px;">Fødested</div>
+                                <div id="share-birth" style="color: #fde68a; font-size: 22px; font-weight: 500;">Kvinneklinikken (KK)</div>
+                            </div>
+                            <div>
+                                <div style="color: rgba(212,175,55,0.7); font-size: 15px; text-transform: uppercase; letter-spacing: 2px;">Hovedfjell</div>
+                                <div id="share-mountain" style="color: #fde68a; font-size: 22px; font-weight: 500;">Ulriken (643 m)</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="color: rgba(212,175,55,0.7); font-size: 15px; text-transform: uppercase; letter-spacing: 2px;">Holdning</div>
+                            <div id="share-attitude" style="color: #E31B23; font-size: 26px; font-weight: 700;">Beliter seg ALDRI!</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Status-stripe -->
+                <div style="margin-top: 36px; padding-top: 28px; border-top: 2px solid rgba(212,175,55,0.2); display: flex; justify-content: space-between; align-items: center; font-family: 'Space Grotesk', monospace;">
+                    <div style="color: rgba(212,175,55,0.7); font-size: 18px;">Status: <span style="color: #fde68a; font-weight: 700;">Godkjent patriot</span></div>
+                    <div style="color: rgba(212,175,55,0.7); font-size: 18px; font-style: italic;">Røsten &amp; Leffe</div>
+                </div>
+            </div>
+
+            <!-- Bunn-CTA: snikreklamen -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 200px; background: #E31B23; display: flex; align-items: center; justify-content: space-between; padding: 0 56px;">
+                <div>
+                    <div style="font-size: 20px; font-weight: 600; color: rgba(255,255,255,0.85); text-transform: uppercase; letter-spacing: 2px;">Soundtracket til stoltheten</div>
+                    <div style="font-family: 'Anton', sans-serif; font-size: 52px; color: #fff; line-height: 1;">«ERKEBERGENSER»</div>
+                    <div style="font-size: 24px; color: rgba(255,255,255,0.9); font-weight: 600;">Røsten &amp; Leffe · ute på Spotify &amp; YouTube</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="width: 96px; height: 96px; border-radius: 50%; background: #1DB954; display: flex; align-items: center; justify-content: center;">
+                        <svg width="56" height="56" viewBox="0 0 24 24" fill="#000"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.561.3z"/></svg>
+                    </div>
+                    <div style="color: #fff; font-size: 14px; margin-top: 8px; font-weight: 700; letter-spacing: 1px;">SPILL DEN!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ Lydeffekter (Web Audio API) ============ -->
+    <script>
+        let audioCtx = null;
+        function getAudioCtx() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playSnareSound(duration = 0.15) {
+            const ctx = getAudioCtx();
+            const bufferSize = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 1000;
+
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+            noise.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            noise.start();
+        }
+    </script>
+
+    <!-- ============ Applikasjonslogikk ============ -->
+    <script>
+        // ---------- Ordbok ----------
+        const gloser = {
+            "Belite seg": "Å godta spilleregler eller innse nederlag. Erkebergensere og buekorpsgutter gjør aldri dette. Det belites overhodet ikke.",
+            "Månebedotten": "Å være fullstendig målløs. Typisk reaksjon når man oppdager at en østfolding prøver å bestille Hansa Pilsner.",
+            "Tjommi": "Ekte bergensk kompis. En du synger Røsten & Leffe-låter sammen med på vei over Torgallmenningen.",
+            "Bekaltrert": "Tilstanden man oppnår etter nøyaktig 5,5 Hansapils på Zachariasbryggen mens SK Brann herjer.",
+            "Boss": "Søppel. Kastes utelukkende i dertil egnede bossspann, aldri på de vakre brosteinene våre.",
+            "Måse": "Bergen sentrums ubestridte tyrann. Ekstremt gassno på skillingsbollen din.",
+            "Tidi": "Morsomt eller underholdende. For eksempel raserianfallene østlandske fotballeksperter får når Brann vinner.",
+            "Gassno": "Sulten på godbiter, enten det er salt lakris eller en kald en fra Hansa Bryggeri."
+        };
+
+        // ---------- Karaoke ----------
+        const karaokeLyrics = [
+            { text: "Her kommer Røsten & Leffe med bergensk humør!", sub: "Ingen østlendinger har hørt lignende før!" },
+            { text: "Regnet faller ned over Danmarksplass …", sub: "Men vi sitter tørt med et iskaldt glass!" },
+            { text: "Vi e' erkebergensere, uansett kva som skjer!", sub: "SK Brann vinner og tørsten blir bare mer!" },
+            { text: "Gullstolen bæres over Bryggen med sang!", sub: "Festen på Stadion varer natten lang!" },
+            { text: "Solen skinne over alle de syv fjell …", sub: "Men det blir regn igjen uansett i kveld!" }
+        ];
+
+        let currentKaraokeIndex = 0;
+        let karaokeInterval = null;
+        let isKaraokePlaying = false;
+
+        function toggleKaraoke() {
+            const playIcon = document.getElementById("play-icon");
+            const vinyl = document.getElementById("vinyl-art").parentElement;
+
+            if (isKaraokePlaying) {
+                clearInterval(karaokeInterval);
+                playIcon.className = "fa-solid fa-play";
+                vinyl.classList.remove("spin-vinyl");
+                isKaraokePlaying = false;
+            } else {
+                playIcon.className = "fa-solid fa-pause";
+                vinyl.classList.add("spin-vinyl");
+                isKaraokePlaying = true;
+                runLyricLoop();
+            }
+        }
+
+        function runLyricLoop() {
+            const progress = document.getElementById("karaoke-progress");
+            const line1 = document.getElementById("karaoke-line-1");
+            const line2 = document.getElementById("karaoke-line-2");
+            const intervalTime = 3000;
+
+            playDrumBeat('takt');
+
+            // Vis første linje umiddelbart
+            const showLine = () => {
+                const currentLine = karaokeLyrics[currentKaraokeIndex];
+                line1.innerText = currentLine.text;
+                line2.innerText = currentLine.sub;
+                playSnareSound(0.2);
+                currentKaraokeIndex = (currentKaraokeIndex + 1) % karaokeLyrics.length;
+                progress.style.width = `${((currentKaraokeIndex) / karaokeLyrics.length) * 100 || 100}%`;
+            };
+            showLine();
+            karaokeInterval = setInterval(showLine, intervalTime);
+        }
+
+        function resetKaraoke() {
+            clearInterval(karaokeInterval);
+            isKaraokePlaying = false;
+            currentKaraokeIndex = 0;
+            document.getElementById("play-icon").className = "fa-solid fa-play";
+            document.getElementById("vinyl-art").parentElement.classList.remove("spin-vinyl");
+            document.getElementById("karaoke-progress").style.width = "0%";
+            document.getElementById("karaoke-line-1").innerText = "Solen skinne over alle de syv fjell …";
+            document.getElementById("karaoke-line-2").innerText = "(Men vi foretrekker regnet!)";
+        }
+
+        // ---------- Pass ----------
+        function oppdaterPass() {
+            const navn = document.getElementById("input-name").value || "Anonym Kjuagutt";
+            const fodested = document.getElementById("input-birth").value;
+            const fjell = document.getElementById("input-mountain").value;
+            const belite = document.getElementById("input-belite").checked;
+
+            document.getElementById("pass-name").innerText = navn;
+            document.getElementById("pass-birth").innerText = fodested;
+            document.getElementById("pass-mountain").innerText = fjell;
+            document.getElementById("pass-attitude").innerText = belite ? "Beliter seg ALDRI!" : "Måtte til slutt belite seg";
+
+            const passCard = document.getElementById("pass-bg").parentElement.parentElement;
+            passCard.classList.add("ring-2", "ring-amber-500");
+            setTimeout(() => passCard.classList.remove("ring-2", "ring-amber-500"), 500);
+        }
+
+        // ---------- Del passet (Web Share API + clipboard-fallback) ----------
+        async function delPass() {
+            oppdaterPass(); // sørg for at passet er oppdatert før deling
+            const navn = document.getElementById("pass-name").innerText;
+            const fjell = document.getElementById("pass-mountain").innerText;
+            const holdning = document.getElementById("pass-attitude").innerText;
+            const status = document.getElementById("del-status");
+            const laat = "https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE";
+
+            const tekst =
+                `🔴🟡 ERKEBERGENSK PASS 🟡🔴\n` +
+                `Borger: ${navn}\n` +
+                `Hovedfjell: ${fjell}\n` +
+                `Holdning: ${holdning}\n` +
+                `Status: Godkjent patriot i Republikken Bergen.\n\n` +
+                `Soundtracket til stoltheten: «Erkebergenser» av Røsten & Leffe 🎶\n${laat}`;
+
+            const visStatus = (melding, farge) => {
+                status.innerText = melding;
+                status.style.color = farge;
+                setTimeout(() => { status.innerText = ""; }, 4000);
+            };
+
+            // 1) Native delemeny der den finnes (mobil + mange desktop-nettlesere)
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: "Mitt erkebergenske pass",
+                        text: tekst,
+                        url: laat
+                    });
+                    visStatus("Takk for at du sprer den bergenske stoltheten! 🔴", "#34D399");
+                    return;
+                } catch (err) {
+                    if (err && err.name === "AbortError") return; // brukeren avbrøt – ingen feilmelding
+                }
+            }
+
+            // 2) Fallback: kopier til utklippstavlen
+            try {
+                await navigator.clipboard.writeText(tekst);
+                visStatus("Passet er kopiert! Lim det inn der du vil. 📋", "#FBBF24");
+            } catch (err) {
+                // 3) Siste fallback: eldre execCommand
+                const ta = document.createElement("textarea");
+                ta.value = tekst;
+                ta.style.position = "fixed";
+                ta.style.opacity = "0";
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand("copy"); visStatus("Passet er kopiert! 📋", "#FBBF24"); }
+                catch (e) { visStatus("Kunne ikke dele automatisk – kopier teksten manuelt.", "#F87171"); }
+                document.body.removeChild(ta);
+            }
+        }
+
+        // ---------- Last ned passet som bilde (html2canvas) ----------
+        async function lastNedPass() {
+            oppdaterPass(); // sørg for ferske data
+            const btn = document.getElementById("download-btn");
+            const status = document.getElementById("del-status");
+            const originalBtn = btn.innerHTML;
+
+            // Synk delkortet med gjeldende passdata
+            document.getElementById("share-name").innerText = document.getElementById("pass-name").innerText;
+            document.getElementById("share-birth").innerText = document.getElementById("pass-birth").innerText;
+            document.getElementById("share-mountain").innerText = document.getElementById("pass-mountain").innerText;
+            document.getElementById("share-attitude").innerText = document.getElementById("pass-attitude").innerText;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Lager bilde …';
+
+            try {
+                // Hent coveret som data-URI via CORS-fetch, slik at html2canvas garantert tegner det
+                const shareCover = document.getElementById("share-cover");
+                if (!shareCover.dataset.embedded) {
+                    try {
+                        const resp = await fetch("https://i.scdn.co/image/ab67616d0000b2737810ead6ae130dcb6455e890", { mode: "cors" });
+                        const blob = await resp.blob();
+                        const dataUri = await new Promise((res) => {
+                            const r = new FileReader();
+                            r.onload = () => res(r.result);
+                            r.readAsDataURL(blob);
+                        });
+                        shareCover.src = dataUri;
+                        shareCover.dataset.embedded = "1";
+                        // Gi bildet et øyeblikk på å dekode
+                        await new Promise((res) => { shareCover.onload = res; setTimeout(res, 600); });
+                    } catch (e) {
+                        console.warn("Kunne ikke embedde cover, bruker original.", e);
+                    }
+                }
+
+                const card = document.getElementById("share-card");
+                const canvas = await html2canvas(card, {
+                    backgroundColor: "#05070C",
+                    scale: 1,           // kortet er allerede 1080px bredt
+                    useCORS: true,
+                    allowTaint: false,
+                    imageTimeout: 8000,
+                    logging: false
+                });
+
+                const navnFil = (document.getElementById("pass-name").innerText || "borger")
+                    .replace(/[^a-zA-ZæøåÆØÅ0-9]+/g, "_");
+
+                // Forsøk native deling av selve bildet (mobil), ellers last ned
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], `erkebergensk-pass-${navnFil}.png`, { type: "image/png" });
+
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: "Mitt erkebergenske pass",
+                                text: "Erkebergenser av Røsten & Leffe 🔴🟡 https://open.spotify.com/track/2JffeDCp1T5vQdQXrqKCnE"
+                            });
+                            status.innerText = "Delt! Spre den bergenske stoltheten 🔴";
+                            status.style.color = "#34D399";
+                        } catch (e) {
+                            if (!e || e.name !== "AbortError") lastNedFallback(canvas, navnFil, status);
+                        }
+                    } else {
+                        lastNedFallback(canvas, navnFil, status);
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtn;
+                    setTimeout(() => { status.innerText = ""; }, 4000);
+                }, "image/png");
+            } catch (err) {
+                console.error("Kunne ikke generere bilde:", err);
+                status.innerText = "Klarte ikke lage bilde – prøv en annen nettleser.";
+                status.style.color = "#F87171";
+                btn.disabled = false;
+                btn.innerHTML = originalBtn;
+                setTimeout(() => { status.innerText = ""; }, 4000);
+            }
+        }
+
+        function lastNedFallback(canvas, navnFil, status) {
+            const link = document.createElement("a");
+            link.download = `erkebergensk-pass-${navnFil}.png`;
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+            status.innerText = "Passet er lastet ned! Klar for Instagram/Snap 📸";
+            status.style.color = "#34D399";
+        }
+
+        // ---------- Ordbok-knapper ----------
+        function translateGlose(word) {
+            const output = document.getElementById("translation-output");
+            output.innerHTML = `<strong class="text-amber-300">${word}:</strong> ${gloser[word]}`;
+            output.classList.add("text-amber-400");
+            setTimeout(() => output.classList.remove("text-amber-400"), 300);
+        }
+        const dictGrid = document.getElementById("dictionary-grid");
+        Object.keys(gloser).forEach(glose => {
+            const btn = document.createElement("button");
+            btn.className = "bg-slate-900 hover:bg-bergenRed hover:text-white transition duration-200 text-slate-300 font-mono font-medium py-2 px-3 rounded-xl text-left text-xs border border-slate-800 flex justify-between items-center";
+            btn.innerHTML = `<span>${glose}</span> <i class="fa-solid fa-chevron-right text-[9px] opacity-50"></i>`;
+            btn.onclick = () => translateGlose(glose);
+            dictGrid.appendChild(btn);
+        });
+
+        // ---------- SK Brann hype-meter ----------
+        function simulerBrann(resultat) {
+            const needle = document.getElementById("hype-needle");
+            const percentage = document.getElementById("hype-percentage");
+            const description = document.getElementById("hype-description");
+            const statTorg = document.getElementById("stat-torg");
+            const statSkeptisk = document.getElementById("stat-skeptisk");
+
+            if (resultat === 'seier') {
+                needle.style.transform = "rotate(80deg)";
+                percentage.innerText = "99,9 %";
+                percentage.className = "text-lg font-black text-green-400 animate-pulse";
+                description.innerText = "Totalt hysteri på Stadion! Noen hevder å ha sett statuen på Muren blunke. «Erkebergenser» ljomer utover Torgallmenningen på full guffe!";
+                statTorg.innerText = "Overfylt (24 000/kvm)";
+                statSkeptisk.innerText = "Ikke-eksisterende (0,0)";
+                playSnareSound(0.25);
+            } else {
+                needle.style.transform = "rotate(-75deg)";
+                percentage.innerText = "12 %";
+                percentage.className = "text-lg font-black text-red-500";
+                description.innerText = "Dyp bergenserdepresjon. Vi skylder på dommeren fra Oslo. Bare en solid dose «Erkebergenser» på øret kan redde kvelden nå.";
+                statTorg.innerText = "Tomt (kun måser)";
+                statSkeptisk.innerText = "Ekstremt høy (9,8)";
+            }
+        }
+
+        // ---------- Buekorps-trommer ----------
+        let drumInterval = null;
+        function playDrumBeat(type) {
+            const indicator = document.getElementById("drum-indicator");
+            const label = document.getElementById("drum-beat-label");
+            if (drumInterval) clearInterval(drumInterval);
+
+            if (type === 'virvel') {
+                label.innerText = "VIRVLESALVE I GANG!";
+                let count = 0;
+                drumInterval = setInterval(() => {
+                    playSnareSound(0.08);
+                    indicator.style.transform = `scaleX(${Math.random() * 0.4 + 0.6})`;
+                    count++;
+                    if (count > 15) {
+                        clearInterval(drumInterval);
+                        indicator.style.transform = "scaleX(0)";
+                        label.innerText = "KLAR TIL Å BRÅKE IGJEN";
+                    }
+                }, 90);
+            } else if (type === 'takt') {
+                label.innerText = "PULSERENDE MARSJTAKT!";
+                let beat = 0;
+                const pattern = [0.15, 0.15, 0.3, 0.15, 0.15, 0.4];
+                function triggerNext() {
+                    if (beat >= pattern.length) {
+                        indicator.style.transform = "scaleX(0)";
+                        label.innerText = "NORDNES-MARSJ FULLFØRT";
+                        return;
+                    }
+                    playSnareSound(pattern[beat]);
+                    indicator.style.transform = `scaleX(${(beat + 1) / pattern.length})`;
+                    setTimeout(() => { beat++; triggerNext(); }, 250);
+                }
+                triggerNext();
+            }
+        }
+
+        // ---------- Live vær fra Open-Meteo (lett, gratis, ingen nøkkel, CORS-vennlig) ----------
+        async function fetchLiveWeather() {
+            const tempText = document.getElementById("live-temp");
+            const weatherIcon = document.getElementById("live-weather-icon");
+            try {
+                const url = "https://api.open-meteo.com/v1/forecast"
+                    + "?latitude=60.39&longitude=5.32"
+                    + "&current=temperature_2m,relative_humidity_2m,wind_speed_10m,precipitation,weather_code"
+                    + "&wind_speed_unit=ms&timezone=Europe%2FOslo";
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Open-Meteo svarte med feilstatus.");
+                const data = await response.json();
+                const c = data.current;
+                const temp = Math.round(c.temperature_2m * 10) / 10;
+                const humidity = c.relative_humidity_2m;
+                const wind = c.wind_speed_10m;
+                const code = c.weather_code;
+                const rainAmount = c.precipitation || 0;
+
+                tempText.innerText = `${String(temp).replace('.', ',')} °C i Bergen`;
+                document.getElementById("live-desc").innerText =
+                    `Vind: ${String(wind).replace('.', ',')} m/s · Fukt: ${humidity} %`;
+
+                // WMO-værkode → ikon (https://open-meteo.com/en/docs)
+                let iconClass, intensity;
+                if ([0, 1].includes(code)) {            // Klart / stort sett klart
+                    iconClass = "fa-solid fa-sun text-2xl text-yellow-400";
+                    intensity = 0;
+                } else if ([2, 3].includes(code)) {     // Delvis / helt overskyet
+                    iconClass = "fa-solid fa-cloud text-2xl text-slate-300";
+                    intensity = 15;
+                } else if ([45, 48].includes(code)) {    // Tåke
+                    iconClass = "fa-solid fa-smog text-2xl text-slate-400";
+                    intensity = 10;
+                } else if (code >= 71 && code <= 77) {   // Snø
+                    iconClass = "fa-solid fa-snowflake text-2xl text-blue-200";
+                    intensity = 40;
+                } else if (code >= 95) {                 // Torden
+                    iconClass = "fa-solid fa-cloud-bolt text-2xl text-amber-300 animate-pulse";
+                    intensity = 90;
+                } else {                                 // Regn / yr / byger (51–67, 80–82)
+                    iconClass = "fa-solid fa-cloud-showers-heavy text-2xl text-blue-400 animate-pulse";
+                    intensity = Math.min(100, Math.max(45, rainAmount * 25 + 45));
+                }
+                weatherIcon.className = iconClass;
+
+                document.getElementById("rain-slider").value = intensity;
+                setRainIntensity(intensity);
+            } catch (error) {
+                console.warn("Open-Meteo utilgjengelig. Setter klassisk Bergensregn.", error);
+                tempText.innerText = "11,5 °C (klassisk)";
+                document.getElementById("live-desc").innerText = "Vind: 6,2 m/s · Fukt: 98 %";
+                setRainIntensity(60);
+            }
+        }
+
+        // ---------- Regnsimulator ----------
+        function setRainIntensity(intensity) {
+            const container = document.getElementById("rain-container");
+            const label = document.getElementById("rain-label");
+            container.innerHTML = '';
+            const dropCount = Math.floor(intensity * 1.8);
+
+            if (intensity == 0) {
+                label.innerText = "Mistenkelig solskinn (vær på vakt)";
+                label.className = "bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 text-xs font-bold px-3 py-1 rounded-full";
+                return;
+            } else if (intensity < 30) {
+                label.innerText = "Vått yr (perfekt for skillingsboller)";
+                label.className = "bg-blue-500/10 text-blue-300 border border-blue-500/30 text-xs font-bold px-3 py-1 rounded-full";
+            } else if (intensity < 70) {
+                label.innerText = "Normalt Bergensøs (friskt)";
+                label.className = "bg-blue-500/10 text-blue-400 border border-blue-500/30 text-xs font-bold px-3 py-1 rounded-full";
+            } else {
+                label.innerText = "Ekstrembyge (låten spilles for fullt)";
+                label.className = "bg-bergenRed/10 text-bergenRed border border-bergenRed/30 text-xs font-bold px-3 py-1 rounded-full animate-pulse";
+            }
+
+            for (let i = 0; i < dropCount; i++) {
+                const drop = document.createElement("div");
+                drop.className = "drop";
+                drop.style.left = `${Math.random() * 100}%`;
+                drop.style.animationDuration = `${0.4 + Math.random() * 0.6}s`;
+                drop.style.animationDelay = `${Math.random() * 1.5}s`;
+                drop.style.height = `${50 + Math.random() * 50}px`;
+                container.appendChild(drop);
+            }
+        }
+        document.getElementById("rain-slider").oninput = function () { setRainIntensity(this.value); };
+
+        // ---------- Chart.js ----------
+        let chartInstance = null;
+        const chartCaptions = {
+            rain: "Snittnedbør i Bergen per måned (mm). Spoiler: det regner alltid.",
+            hansa: "Ukentlig lykke-indeks. Hansa stiger jevnt mot helg; skepsisen mot Ringnes forblir lav.",
+            umbrella: "Antall paraplyer som ryker av vinden per uke, fordelt på beryktede vindkorridorer.",
+            streams: "Totale Spotify-strømminger siden lansering 14. mai 2026. Snitt: +652 i døgnet — hver topp er en ny bølge bergensk stolthet."
+        };
+        const chartData = {
+            rain: {
+                labels: ['Jan','Feb','Mar','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Des'],
+                datasets: [{
+                    label: 'Snittnedbør (mm)',
+                    data: [190,152,170,114,106,132,148,190,283,271,259,235],
+                    backgroundColor: 'rgba(227,27,35,0.10)', borderColor: '#E31B23',
+                    borderWidth: 3, tension: 0.3, fill: true, pointRadius: 3
+                }]
+            },
+            hansa: {
+                labels: ['Man','Tir','Ons','Tor','Fre','Lør','Søn'],
+                datasets: [
+                    { label: 'Hansa Pilsner (lykke)', data: [50,55,70,85,140,200,110],
+                      borderColor: '#D4AF37', borderWidth: 3, backgroundColor: 'rgba(212,175,55,0.10)', tension: 0.2, fill: true },
+                    { label: 'Ringnes (skepsis)', data: [4,4,3,2,1,0.5,2],
+                      borderColor: '#475569', borderWidth: 2, borderDash: [5,5], fill: false }
+                ]
+            },
+            umbrella: {
+                labels: ['Smørsbroen','Fisketorget','Byparken','Torgallmenningen','Danmarksplass'],
+                datasets: [{
+                    label: 'Vindtatte paraplyer/uke',
+                    data: [420,310,580,750,490],
+                    backgroundColor: ['#E31B23','#D4AF37','#10B981','#3B82F6','#6366F1'],
+                    borderColor: '#05070C', borderWidth: 2
+                }]
+            },
+            streams: {
+                labels: ['Lansering','+1 d','+2 d','+3 d','+4 d','+5 d','+6 d','+7 d','I dag'],
+                datasets: [{
+                    label: '«Erkebergenser» – totale Spotify-strømminger',
+                    data: [1180, 2050, 2900, 3550, 4100, 4750, 5400, 5990, 6675],
+                    backgroundColor: 'rgba(29,185,84,0.12)', borderColor: '#1DB954',
+                    borderWidth: 3, tension: 0.35, fill: true, pointRadius: 4, pointBackgroundColor: '#1DB954'
+                }]
+            }
+        };
+
+        function switchChart(type) {
+            ['rain','hansa','umbrella','streams'].forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === type) {
+                    btn.className = "text-xs font-bold px-3 py-1.5 rounded-lg bg-bergenRed/10 text-bergenRed border border-bergenRed/20 transition";
+                } else {
+                    btn.className = "text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-900 text-slate-400 hover:bg-slate-800 transition";
+                }
+            });
+            document.getElementById("chart-caption").innerText = chartCaptions[type];
+            if (chartInstance) chartInstance.destroy();
+            renderChart(type);
+        }
+
+        function renderChart(type) {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
+            chartInstance = new Chart(ctx, {
+                type: type === 'umbrella' ? 'bar' : 'line',
+                data: chartData[type],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#94A3B8', font: { family: 'Outfit', size: 11 } } } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: { family: 'Outfit' } } },
+                        x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { family: 'Outfit' } } }
+                    }
+                }
+            });
+        }
+
+        // ---------- Teller-animasjon for release-statistikk ----------
+        function animateCounters() {
+            document.querySelectorAll('.counter').forEach(el => {
+                const target = parseFloat(el.dataset.target);
+                const decimal = el.dataset.decimal; // valgfri desimaldel (f.eks. "5" => ,5)
+                const duration = 1600;
+                const start = performance.now();
+                function tick(now) {
+                    const p = Math.min((now - start) / duration, 1);
+                    const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
+                    const val = Math.floor(eased * target);
+                    el.innerText = val.toLocaleString('nb-NO');
+                    if (p < 1) {
+                        requestAnimationFrame(tick);
+                    } else {
+                        el.innerText = decimal
+                            ? target.toLocaleString('nb-NO') + ',' + decimal
+                            : target.toLocaleString('nb-NO');
+                    }
+                }
+                requestAnimationFrame(tick);
+            });
+        }
+
+        // ---------- Init ----------
+        window.onload = function () {
+            renderChart('rain');
+            oppdaterPass();
+            fetchLiveWeather();
+            animateCounters();
+            setInterval(fetchLiveWeather, 300000); // hvert 5. min
+        };
+    </script>
+</body>
+</html>
